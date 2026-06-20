@@ -61,6 +61,8 @@
     background:var(--card2);color:var(--accent);border:1px solid var(--line);display:inline-flex;align-items:center;gap:6px}
   .links a:hover{border-color:var(--accent)}
   .links a.vid{color:var(--accent2)}
+  .introbox{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:9px;padding:11px 14px;margin:10px 0 2px;font-size:14px;color:var(--muted);line-height:1.65}
   .empty{text-align:center;color:var(--muted);padding:40px 0}
   footer{text-align:center;color:var(--muted);font-size:12px;margin-top:30px}
 </style>
@@ -77,6 +79,7 @@
     <div class="groups" id="groups"></div>
     <div class="filters" id="filters"></div>
   </div>
+  <div id="intro"></div>
   <div class="count" id="count"></div>
   <div id="list"></div>
 
@@ -1449,7 +1452,117 @@ const DATA = [
    video:"https://www.youtube.com/results?search_query=statue+of+liberty", wiki:"https://baike.baidu.com/item/自由女神像"},
   {abbr:"巴厘岛", full:"Bali", zh:"印尼·度假天堂", cat:"世界景点", country:"印度尼西亚",
    desc:"印尼著名度假岛，火山、梯田、海滩与印度教庙宇并存，乌布的文艺与海神庙的日落各具风情，适合度假与冲浪。",
-   video:"https://www.youtube.com/results?search_query=bali+indonesia", wiki:"https://baike.baidu.com/item/巴厘岛"}
+   video:"https://www.youtube.com/results?search_query=bali+indonesia", wiki:"https://baike.baidu.com/item/巴厘岛"},
+
+  /* ===== 计算机·开发概念与术语补充 ===== */
+  {abbr:"CLI", full:"Command Line Interface", zh:"命令行界面", cat:"计算机基础",
+   desc:"用“打字输入命令”来操作电脑的方式（那种黑底白字的窗口/终端），相对鼠标点击的图形界面(GUI)。Codex CLI、Claude Code 就是 CLI 工具——在你电脑本地的终端里运行，能直接读写你的文件、执行命令。",
+   video:"https://www.youtube.com/results?search_query=command+line+interface+CLI", wiki:"https://baike.baidu.com/item/命令行界面"},
+  {abbr:"GUI", full:"Graphical User Interface", zh:"图形用户界面", cat:"计算机基础",
+   desc:"用窗口、图标、鼠标点击来操作的界面，和 CLI 相对。我们日常用的手机/电脑界面几乎都是 GUI。",
+   video:"https://www.youtube.com/results?search_query=GUI+graphical+user+interface", wiki:"https://baike.baidu.com/item/图形用户界面"},
+  {abbr:"终端 Terminal", full:"Terminal", zh:"输命令的黑窗口", cat:"计算机基础",
+   desc:"运行命令行(CLI)的程序窗口，程序员在里面敲命令。Mac 上的应用就叫“终端”，Claude Code 就跑在里面。",
+   video:"https://www.youtube.com/results?search_query=什么是终端+terminal", wiki:"https://baike.baidu.com/item/终端"},
+  {abbr:"缓存 Cache", full:"Cache", zh:"加速用的临时存储", cat:"计算机基础",
+   desc:"把常用或刚算过的数据临时存到更快的地方，下次直接取，避免重复计算/读取，从而提速。浏览器、CPU、大模型都有缓存。",
+   video:"https://www.youtube.com/results?search_query=什么是缓存+cache", wiki:"https://baike.baidu.com/item/缓存"},
+  {abbr:"缓存命中率", full:"Cache Hit Rate", zh:"缓存的有效程度", cat:"计算机基础",
+   desc:"请求中“在缓存里直接找到”的比例，越高越快越省。大模型的“提示缓存(prompt cache)”命中率高时，能大幅降低费用、加快响应。",
+   video:"https://www.youtube.com/results?search_query=cache+hit+rate", wiki:"https://baike.baidu.com/item/缓存命中率"},
+  {abbr:"diff", full:"diff (difference)", zh:"差异对比", cat:"计算机基础",
+   desc:"“difference”的缩写：比较两份文件/两段代码的不同，显示哪些行被增、删、改（通常 + 绿色为新增、- 红色为删除）。",
+   video:"https://www.youtube.com/results?search_query=什么是diff+代码差异", wiki:"https://baike.baidu.com/item/diff"},
+  {abbr:"Commit 提交", full:"Commit", zh:"一次改动的存档", cat:"计算机基础",
+   desc:"版本管理(Git)里把一次改动“存档”。每个 commit 都带一条 diff 记录，能看到这次到底改了什么、谁改的、为什么改。",
+   video:"https://www.youtube.com/results?search_query=git+commit+是什么", wiki:"https://baike.baidu.com/item/commit"},
+  {abbr:"HTML", full:"HyperText Markup Language", zh:"超文本标记语言", cat:"计算机基础",
+   desc:"H 超文本 + T 文本 + M 标记 + L 语言。定义网页的“结构与内容”（标题、段落、图片、链接），是网页的骨架。前端三件套之一。",
+   video:"https://www.youtube.com/results?search_query=HTML+入门", wiki:"https://baike.baidu.com/item/HTML"},
+  {abbr:"CSS", full:"Cascading Style Sheets", zh:"层叠样式表", cat:"计算机基础",
+   desc:"C 层叠 + S 样式 + S 表。定义网页的“外观与样式”（颜色、字体、布局、动画），是网页的“皮肤”。前端三件套之一。",
+   video:"https://www.youtube.com/results?search_query=CSS+入门", wiki:"https://baike.baidu.com/item/CSS"},
+  {abbr:"Markdown", full:"Markdown", zh:"轻量排版语法", cat:"计算机基础",
+   desc:"一种轻量“标记语言”：用简单符号（# 标题、* 列表、**加粗**）就能写出带格式的文本。GitHub、Notion、很多写作工具都支持。",
+   video:"https://www.youtube.com/results?search_query=markdown+入门", wiki:"https://baike.baidu.com/item/Markdown"},
+  {abbr:"Git", full:"Git", zh:"版本控制工具", cat:"计算机基础",
+   desc:"最流行的“版本控制”工具：记录代码每一次改动、可随时回退、支持多人协作。GitHub 就是基于 Git 的托管平台。",
+   video:"https://www.youtube.com/results?search_query=git+版本控制+入门", wiki:"https://baike.baidu.com/item/Git"},
+  {abbr:"IDE", full:"Integrated Development Environment", zh:"集成开发环境", cat:"计算机基础",
+   desc:"把写代码、运行、调试都集成在一起的软件，如 VS Code、Xcode、JetBrains。相当于程序员的“一体化工作台”。",
+   video:"https://www.youtube.com/results?search_query=什么是IDE", wiki:"https://baike.baidu.com/item/集成开发环境"},
+  {abbr:"编译器", full:"Compiler", zh:"代码翻译器", cat:"计算机基础",
+   desc:"把人写的源代码“翻译”成计算机能直接执行的机器码的程序。C、C++、Swift 等语言都要先编译再运行。",
+   video:"https://www.youtube.com/results?search_query=什么是编译器", wiki:"https://baike.baidu.com/item/编译器"},
+  {abbr:"开源", full:"Open Source", zh:"公开源代码", cat:"计算机基础",
+   desc:"公开源代码，任何人都能查看、使用、修改、分发，靠社区协作共建（如 Linux、Python）。与之相对的是“闭源”。",
+   video:"https://www.youtube.com/results?search_query=什么是开源", wiki:"https://baike.baidu.com/item/开源软件"},
+  {abbr:"Go", full:"Go (Golang)", zh:"谷歌出品的语言", cat:"计算机基础",
+   desc:"谷歌出品的编程语言（又叫 Golang）：语法简洁、天生擅长并发、运行快，云服务和后端常用（Docker、Kubernetes 都用它）。",
+   video:"https://www.youtube.com/results?search_query=Go语言+入门", wiki:"https://baike.baidu.com/item/Go语言"},
+  {abbr:"Rust", full:"Rust", zh:"安全又高性能的系统语言", cat:"计算机基础",
+   desc:"主打“内存安全 + 高性能”的系统级语言，没有垃圾回收却很安全，连续多年被开发者评为最受喜爱的语言，用于底层/系统软件。",
+   video:"https://www.youtube.com/results?search_query=Rust语言+入门", wiki:"https://baike.baidu.com/item/Rust"},
+  {abbr:"TypeScript", full:"TypeScript (TS)", zh:"加了类型的 JavaScript", cat:"计算机基础",
+   desc:"给 JavaScript 加上“类型检查”的超集，能在写代码时就发现错误，大型前端项目几乎都用它。",
+   video:"https://www.youtube.com/results?search_query=TypeScript+入门", wiki:"https://baike.baidu.com/item/TypeScript"},
+  {abbr:"Swift", full:"Swift", zh:"苹果的开发语言", cat:"计算机基础",
+   desc:"苹果推出的现代编程语言，用来开发 iOS / Mac App。你那个“领域词典”原生 App 就是用 Swift 写的。",
+   video:"https://www.youtube.com/results?search_query=Swift语言+入门", wiki:"https://baike.baidu.com/item/Swift"},
+  {abbr:"Kotlin", full:"Kotlin", zh:"安卓首选语言", cat:"计算机基础",
+   desc:"现代、简洁、与 Java 兼容的语言，已成为安卓官方首选开发语言，也能做跨平台。",
+   video:"https://www.youtube.com/results?search_query=Kotlin+入门", wiki:"https://baike.baidu.com/item/Kotlin"},
+
+  /* ===== 计算机·常用软件 ===== */
+  {abbr:"GitHub", full:"GitHub", zh:"全球最大代码托管平台", cat:"常用软件", country:"美国", founder:"微软旗下（基于 Git）",
+   desc:"全球最大的代码托管与协作平台（基于 Git），程序员在上面存代码、协作、做开源项目的大本营。你这个词典网站就托管在 GitHub 上。",
+   video:"https://www.youtube.com/results?search_query=github+是什么", wiki:"https://baike.baidu.com/item/GitHub"},
+  {abbr:"Linear", full:"Linear", zh:"高效项目管理工具", cat:"常用软件", country:"美国",
+   desc:"以“快、简洁、好看”著称的项目与任务管理工具，深受科技创业团队喜爱，主打流畅的工程协作与问题追踪。",
+   video:"https://www.youtube.com/results?search_query=linear+app+project+management", wiki:"https://linear.app/"},
+  {abbr:"Notion", full:"Notion", zh:"全能笔记协作工具", cat:"常用软件", country:"美国",
+   desc:"集笔记、文档、数据库、知识库、看板于一体的“全能工作空间”，个人记录和团队协作都很好用，支持 Markdown。",
+   video:"https://www.youtube.com/results?search_query=notion+入门", wiki:"https://baike.baidu.com/item/Notion"},
+  {abbr:"Slack", full:"Slack", zh:"团队沟通工具", cat:"常用软件", country:"美国",
+   desc:"频道式的团队即时沟通工具，能整合各种应用，是很多公司的“线上办公室”。",
+   video:"https://www.youtube.com/results?search_query=slack+是什么", wiki:"https://baike.baidu.com/item/Slack"},
+  {abbr:"Figma", full:"Figma", zh:"在线协作设计工具", cat:"常用软件", country:"美国",
+   desc:"浏览器里就能多人实时协作的 UI/UX 界面设计工具，是当今界面设计行业的事实标准。",
+   video:"https://www.youtube.com/results?search_query=figma+入门", wiki:"https://baike.baidu.com/item/Figma"},
+  {abbr:"VS Code", full:"Visual Studio Code", zh:"最流行的代码编辑器", cat:"常用软件", country:"美国", founder:"微软",
+   desc:"微软出品的免费代码编辑器，轻量、插件极其丰富，是目前最流行的写代码工具。",
+   video:"https://www.youtube.com/results?search_query=VS+Code+入门", wiki:"https://baike.baidu.com/item/Visual+Studio+Code"},
+
+  /* ===== AI·跨 Agent 协议 ===== */
+  {abbr:"A2A", full:"Agent2Agent Protocol", zh:"跨智能体协议", cat:"Agent应用",
+   desc:"谷歌牵头的开放标准，让不同厂商、不同框架的 AI agent 能互相发现、通信、协作。和 MCP 互补——MCP 让 agent 连“工具”，A2A 让 agent 连“别的 agent”。",
+   video:"https://www.youtube.com/results?search_query=A2A+agent2agent+protocol", wiki:"https://en.wikipedia.org/wiki/Agent2Agent"},
+
+  /* ===== 旅行·欧洲小众美景（多洛米蒂 / 瑞士等）===== */
+  {abbr:"多洛米蒂", full:"Dolomites", zh:"意大利·粉白色山峰群", cat:"欧洲景点", country:"意大利",
+   desc:"意大利北部的阿尔卑斯山脉，锯齿状的粉白色山峰群（世界遗产）。三峰山(Tre Cime)、布莱埃斯湖(Lago di Braies)是经典，徒步与摄影天堂。",
+   video:"https://www.youtube.com/results?search_query=dolomites+italy", wiki:"https://baike.baidu.com/item/多洛米蒂山"},
+  {abbr:"富纳斯山谷", full:"Val di Funes", zh:"意大利·明信片山谷", cat:"欧洲景点", country:"意大利",
+   desc:"多洛米蒂里的田园山谷，圣玛格达莱纳小教堂(Santa Maddalena)配着尖峰背景，是明信片般的经典画面，绿草木屋牛铃。",
+   video:"https://www.youtube.com/results?search_query=val+di+funes+dolomites", wiki:"https://baike.baidu.com/item/方山谷"},
+  {abbr:"马特洪峰", full:"Matterhorn", zh:"瑞士·金字塔雪峰", cat:"欧洲景点", country:"瑞士",
+   desc:"瑞士采尔马特(Zermatt)的标志性金字塔形雪峰（三角巧克力 Toblerone 的 logo 原型）。无车小镇采尔马特是登山与滑雪胜地。",
+   video:"https://www.youtube.com/results?search_query=matterhorn+zermatt", wiki:"https://baike.baidu.com/item/马特洪峰"},
+  {abbr:"因特拉肯", full:"Interlaken", zh:"瑞士·两湖度假门户", cat:"欧洲景点", country:"瑞士",
+   desc:"瑞士两湖之间的度假小镇，是前往少女峰地区的门户，也是滑翔伞、雪山火车的集散地，背靠雪山。",
+   video:"https://www.youtube.com/results?search_query=interlaken+switzerland", wiki:"https://baike.baidu.com/item/因特拉肯"},
+  {abbr:"卢塞恩", full:"Lucerne", zh:"瑞士·湖畔古城", cat:"欧洲景点", country:"瑞士",
+   desc:"瑞士最上镜的城市之一，卡佩尔廊桥、湖光与雪山(瑞吉峰/铁力士)环抱，古城气质优雅。",
+   video:"https://www.youtube.com/results?search_query=lucerne+switzerland", wiki:"https://baike.baidu.com/item/卢塞恩"},
+  {abbr:"格林德瓦", full:"Grindelwald", zh:"瑞士·少女峰山村", cat:"欧洲景点", country:"瑞士",
+   desc:"瑞士少女峰脚下的山村，First 一线天观景台、艾格峰北壁壮观，是徒步与冬季运动的天堂。",
+   video:"https://www.youtube.com/results?search_query=grindelwald+switzerland", wiki:"https://baike.baidu.com/item/格林德尔瓦尔德"},
+  {abbr:"五渔村", full:"Cinque Terre", zh:"意大利·彩色悬崖渔村", cat:"欧洲景点", country:"意大利",
+   desc:"意大利利古里亚海岸的五个彩色悬崖渔村（世界遗产），依山傍海、步道相连，色彩斑斓，坐小火车串游最方便。",
+   video:"https://www.youtube.com/results?search_query=cinque+terre+italy", wiki:"https://baike.baidu.com/item/五渔村"},
+  {abbr:"科莫湖", full:"Lake Como", zh:"意大利·高级湖区", cat:"欧洲景点", country:"意大利",
+   desc:"意大利北部阿尔卑斯山脚的高级度假湖区，别墅花园与精致小镇环湖，风景优雅，深受名流喜爱。",
+   video:"https://www.youtube.com/results?search_query=lake+como+italy", wiki:"https://baike.baidu.com/item/科莫湖"}
 ];
 
 /* ===== 渲染逻辑 ===== */
@@ -1458,13 +1571,20 @@ const qEl = document.getElementById('q');
 const countEl = document.getElementById('count');
 const filtersEl = document.getElementById('filters');
 const groupsEl = document.getElementById('groups');
+const introEl = document.getElementById('intro');
 
 /* 四大板块 → 各自包含的小分类 */
 const GROUPS = {
   "AI":["基础","经典模型","训练","推理部署","硬件算力","RAG检索","Agent应用","采样参数","评估安全","生成","前沿","模型产品","公司机构"],
   "商业":["科技互联网","汽车","能源","金融","医药健康","消费零售","工业航空","传媒娱乐","奢侈品","世界首富","中国首富","中国知名企业","投资人","投资机构"],
-  "计算机":["计算机基础"],
+  "计算机":["计算机基础","常用软件"],
   "旅行":["欧洲景点","世界景点"]
+};
+const GROUP_INTRO = {
+  "AI":"🤖 从神经网络、Transformer 等底层原理，到训练、推理部署、硬件算力，再到大模型公司与产品——建立对人工智能的整体认知。",
+  "商业":"💼 世界 500 强按行业拆解 + 世界/中国首富 + 知名企业 + 投资人与投资机构 + 奢侈品，看懂全球商业版图。",
+  "计算机":"💻 前端后端、编程语言、常用软件与开发概念，帮你听懂程序员在说什么。",
+  "旅行":"✈️ 参考《孤独星球》精选的欧洲与世界经典目的地，名字、位置与看点一目了然。"
 };
 const ALLCATS = Array.from(new Set(DATA.map(d=>d.cat)));
 let activeGroup = '全部';
@@ -1533,6 +1653,7 @@ function speak(text, btn){
 
 function render(){
   const q = qEl.value.trim().toLowerCase();
+  if(introEl) introEl.innerHTML = (activeGroup!=='全部' && GROUP_INTRO[activeGroup]) ? `<div class="introbox">${GROUP_INTRO[activeGroup]}</div>` : '';
   const items = DATA.filter(d=>{
     const inGroup = activeGroup==='全部' || (GROUPS[activeGroup]||[]).includes(d.cat);
     const matchCat = activeCat==='全部' || d.cat===activeCat;
