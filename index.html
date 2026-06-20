@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 名词小词典</title>
+<style>
+  :root{
+    --bg:#0f1117; --card:#1a1d27; --card2:#232735; --text:#e8eaf0;
+    --muted:#9aa0b0; --accent:#7c9cff; --accent2:#5cd6c0; --line:#2a2e3d;
+    --tag:#2d3346;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f4f6fb; --card:#ffffff; --card2:#f0f2f8; --text:#1a1d27;
+      --muted:#646b7d; --accent:#3b5bdb; --accent2:#0ca678; --line:#e4e7ef; --tag:#eef1f8;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 18px 80px}
+  header{text-align:center;margin:14px 0 22px}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:14px}
+  .search{position:sticky;top:0;z-index:5;padding:12px 0;background:linear-gradient(var(--bg) 70%,transparent)}
+  .search input{width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--line);
+    background:var(--card);color:var(--text);font-size:16px;outline:none}
+  .search input:focus{border-color:var(--accent)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
+  .chip{padding:6px 13px;border-radius:20px;background:var(--tag);color:var(--muted);
+    font-size:13px;cursor:pointer;border:1px solid transparent;user-select:none}
+  .chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .count{color:var(--muted);font-size:13px;margin:6px 2px 12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    margin-bottom:12px;overflow:hidden;transition:border-color .15s}
+  .card:hover{border-color:var(--accent)}
+  .head{padding:15px 18px;cursor:pointer;display:flex;align-items:flex-start;gap:12px}
+  .head .main{flex:1;min-width:0}
+  .abbr{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .say{border:none;background:var(--tag);color:var(--accent);cursor:pointer;
+    font-size:14px;line-height:1;padding:4px 8px;border-radius:8px;flex:none}
+  .say:hover{background:var(--accent);color:#fff}
+  .say.playing{background:var(--accent2);color:#fff}
+  .full{color:var(--accent2);font-size:13.5px;margin-top:1px}
+  .zh{color:var(--muted);font-size:14px;margin-top:2px}
+  .cat{font-size:11px;color:var(--muted);background:var(--tag);padding:3px 9px;border-radius:6px;white-space:nowrap}
+  .arrow{color:var(--muted);transition:transform .2s;margin-top:4px}
+  .card.open .arrow{transform:rotate(90deg)}
+  .body{max-height:0;overflow:hidden;transition:max-height .25s ease;border-top:1px solid transparent}
+  .card.open .body{max-height:600px;border-top-color:var(--line)}
+  .body-in{padding:14px 18px 16px}
+  .desc{font-size:15px;margin:0 0 14px;color:var(--text)}
+  .links{display:flex;gap:10px;flex-wrap:wrap}
+  .links a{text-decoration:none;font-size:14px;padding:8px 14px;border-radius:9px;
+    background:var(--card2);color:var(--accent);border:1px solid var(--line);display:inline-flex;align-items:center;gap:6px}
+  .links a:hover{border-color:var(--accent)}
+  .links a.vid{color:var(--accent2)}
+  .empty{text-align:center;color:var(--muted);padding:40px 0}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:30px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🧠 AI 名词小词典</h1>
+    <div class="sub">点击词条展开解释 · 内含视频与百科链接</div>
+  </header>
+
+  <div class="search">
+    <input id="q" type="text" placeholder="搜索名词、英文或中文…（例如 RAG、注意力、微调）" autocomplete="off">
+    <div class="filters" id="filters"></div>
+  </div>
+  <div class="count" id="count"></div>
+  <div id="list"></div>
+
+  <footer>自己维护的迷你词典 · 直接编辑 index.html 里的 DATA 即可增删词条</footer>
+</div>
+
+<script>
+/* ===== 词条数据：想加词，复制一段往里填即可 ===== */
+const DATA = [
+  {abbr:"LLM", full:"Large Language Model", zh:"大语言模型", cat:"基础",
+   desc:"用海量文本训练、能理解和生成自然语言的超大规模神经网络（如 GPT、Claude）。核心能力来自预测“下一个词”，规模够大后涌现出推理、翻译、写代码等能力。",
+   video:"https://www.youtube.com/watch?v=wjZofJX0v4M", wiki:"https://zh.wikipedia.org/wiki/大型语言模型"},
+
+  {abbr:"Transformer", full:"Transformer Architecture", zh:"变换器架构", cat:"基础",
+   desc:"2017 年 Google 论文《Attention Is All You Need》提出的神经网络结构，靠“注意力机制”并行处理序列，是当今几乎所有大模型的底座。",
+   video:"https://www.youtube.com/watch?v=wjZofJX0v4M", wiki:"https://zh.wikipedia.org/wiki/Transformer模型"},
+
+  {abbr:"Attention", full:"Attention Mechanism", zh:"注意力机制", cat:"基础",
+   desc:"让模型在处理某个词时，动态地“关注”句子里相关的其他词，从而理解上下文关系。是 Transformer 的核心。",
+   video:"https://www.youtube.com/watch?v=eMlx5fFNoYc", wiki:"https://en.wikipedia.org/wiki/Attention_(machine_learning)"},
+
+  {abbr:"Token", full:"Token / Tokenization", zh:"词元 / 分词", cat:"基础",
+   desc:"模型处理文本的最小单位，可能是一个词、半个词或一个字。模型按 token 计费和计算长度，“分词”就是把文本切成 token 的过程。",
+   video:"https://www.youtube.com/watch?v=zduSFxRajkE", wiki:"https://en.wikipedia.org/wiki/Lexical_analysis#Tokenization"},
+
+  {abbr:"Embedding", full:"Vector Embedding", zh:"向量嵌入", cat:"基础",
+   desc:"把词语、句子或图片转成一串数字（向量），让语义相近的内容在向量空间里距离也相近。是语义搜索、RAG 的基础。",
+   video:"https://www.youtube.com/watch?v=wgfSDrqYMJ4", wiki:"https://en.wikipedia.org/wiki/Word_embedding"},
+
+  {abbr:"NN", full:"Neural Network", zh:"神经网络", cat:"基础",
+   desc:"模仿大脑神经元连接方式的计算模型，由层层相连的“节点”组成，通过调整连接权重来学习数据中的规律。",
+   video:"https://www.youtube.com/watch?v=aircAruvnKk", wiki:"https://zh.wikipedia.org/wiki/人工神经网络"},
+
+  {abbr:"Backprop", full:"Backpropagation", zh:"反向传播", cat:"训练",
+   desc:"训练神经网络的核心算法：先算出预测误差，再把误差从输出层“倒推”回去，逐层调整每个权重，让下次预测更准。",
+   video:"https://www.youtube.com/watch?v=Ilg3gGewQ5U", wiki:"https://zh.wikipedia.org/wiki/反向传播算法"},
+
+  {abbr:"GD", full:"Gradient Descent", zh:"梯度下降", cat:"训练",
+   desc:"一种优化方法：把“误差”想象成山谷，沿着最陡的下坡方向一小步一小步走，直到走到谷底（误差最小），从而找到最优参数。",
+   video:"https://www.youtube.com/watch?v=IHZwWFHWa-w", wiki:"https://zh.wikipedia.org/wiki/梯度下降法"},
+
+  {abbr:"Fine-tuning", full:"Fine-tuning", zh:"微调", cat:"训练",
+   desc:"在已经训练好的大模型基础上，用一小批特定领域的数据继续训练，让它更擅长某个具体任务或风格，成本远低于从头训练。",
+   video:"https://www.youtube.com/watch?v=eC6Hd1hFvos", wiki:"https://en.wikipedia.org/wiki/Fine-tuning_(deep_learning)"},
+
+  {abbr:"RLHF", full:"Reinforcement Learning from Human Feedback", zh:"人类反馈强化学习", cat:"训练",
+   desc:"用人类对模型回答的好坏评分作为奖励信号，反复训练模型，使其输出更符合人类偏好。是 ChatGPT 变“听话”的关键技术。",
+   video:"https://www.youtube.com/watch?v=qV_rOlHjvvs", wiki:"https://en.wikipedia.org/wiki/Reinforcement_learning_from_human_feedback"},
+
+  {abbr:"Pre-training", full:"Pre-training", zh:"预训练", cat:"训练",
+   desc:"模型的第一阶段：在海量通用数据上无监督学习，掌握语言/世界的基础知识。之后再通过微调适配具体任务。",
+   video:"https://www.youtube.com/watch?v=wjZofJX0v4M", wiki:"https://en.wikipedia.org/wiki/Foundation_model"},
+
+  {abbr:"RAG", full:"Retrieval-Augmented Generation", zh:"检索增强生成", cat:"Agent应用",
+   desc:"回答前先去外部知识库（如你的文档）检索相关资料，再让模型基于这些资料作答。能减少“胡编”，让模型用上最新或私有知识。",
+   video:"https://www.youtube.com/watch?v=T-D1OfcDW1M", wiki:"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},
+
+  {abbr:"Prompt", full:"Prompt / Prompt Engineering", zh:"提示词 / 提示工程", cat:"Agent应用",
+   desc:"你给模型的输入指令。提示工程就是通过精心设计指令、示例和结构，引导模型给出更准确、更符合预期的输出。",
+   video:"https://www.youtube.com/watch?v=dOxUroR57xs", wiki:"https://en.wikipedia.org/wiki/Prompt_engineering"},
+
+  {abbr:"CoT", full:"Chain-of-Thought", zh:"思维链", cat:"Agent应用",
+   desc:"让模型在给出答案前先“一步步把推理过程写出来”，能显著提升它在数学、逻辑等复杂问题上的准确率。",
+   video:"https://www.youtube.com/watch?v=_5lsmU0pTHc", wiki:"https://en.wikipedia.org/wiki/Prompt_engineering#Chain-of-thought"},
+
+  {abbr:"Agent", full:"AI Agent", zh:"智能体", cat:"Agent应用",
+   desc:"能自主规划、调用工具（搜索、代码、API）、分多步完成复杂任务的 AI 系统，而不只是单轮问答。",
+   video:"https://www.youtube.com/watch?v=ZYf9V2fSFwU", wiki:"https://en.wikipedia.org/wiki/Intelligent_agent"},
+
+  {abbr:"Hallucination", full:"Hallucination", zh:"幻觉", cat:"Agent应用",
+   desc:"模型一本正经地编造出看似合理、实则错误或不存在的信息。是当前大模型最需警惕的可靠性问题。",
+   video:"https://www.youtube.com/watch?v=cfqtFvWOfg0", wiki:"https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence)"},
+
+  {abbr:"Context Window", full:"Context Window", zh:"上下文窗口", cat:"Agent应用",
+   desc:"模型一次能“看到”和记住的最大文本长度（按 token 算）。超出窗口的早期内容会被遗忘。窗口越大，能处理的文档越长。",
+   video:"https://www.youtube.com/watch?v=zduSFxRajkE", wiki:"https://en.wikipedia.org/wiki/Large_language_model#Context_window"},
+
+  {abbr:"Diffusion", full:"Diffusion Model", zh:"扩散模型", cat:"生成",
+   desc:"图像生成主流技术（如 Stable Diffusion、Midjourney）：先把图片加噪成雪花点，再训练模型一步步“去噪”还原，从而学会凭文字生成图像。",
+   video:"https://www.youtube.com/watch?v=1CIpzeNxIhU", wiki:"https://en.wikipedia.org/wiki/Diffusion_model"},
+
+  {abbr:"GAN", full:"Generative Adversarial Network", zh:"生成对抗网络", cat:"生成",
+   desc:"让两个网络对抗：“生成器”造假图，“判别器”辨真假，互相博弈不断进步，最终生成器能造出以假乱真的内容。",
+   video:"https://www.youtube.com/watch?v=8L11aMN5KY8", wiki:"https://zh.wikipedia.org/wiki/生成对抗网络"},
+
+  {abbr:"GPT", full:"Generative Pre-trained Transformer", zh:"生成式预训练变换器", cat:"基础",
+   desc:"OpenAI 提出的模型家族名，也是“预训练 + Transformer + 生成式”的代表架构。ChatGPT 即基于 GPT 系列。",
+   video:"https://www.youtube.com/watch?v=wjZofJX0v4M", wiki:"https://en.wikipedia.org/wiki/Generative_pre-trained_transformer"},
+
+  {abbr:"MoE", full:"Mixture of Experts", zh:"专家混合模型", cat:"基础",
+   desc:"把大模型拆成多个“专家”子网络，每次只激活其中少数最相关的专家来处理输入，从而用更低算力跑出更大模型的效果。",
+   video:"https://www.youtube.com/watch?v=0U_65fLoTq0", wiki:"https://en.wikipedia.org/wiki/Mixture_of_experts"},
+
+  {abbr:"CNN", full:"Convolutional Neural Network", zh:"卷积神经网络", cat:"经典模型",
+   desc:"擅长处理图像的网络结构，用“卷积核”在图片上滑动提取边缘、纹理等局部特征，是计算机视觉的奠基技术。",
+   video:"https://www.youtube.com/watch?v=KuXjwB4LzSA", wiki:"https://zh.wikipedia.org/wiki/卷积神经网络"},
+
+  {abbr:"RNN/LSTM", full:"Recurrent Neural Network / Long Short-Term Memory", zh:"循环神经网络 / 长短期记忆", cat:"经典模型",
+   desc:"Transformer 出现前处理序列（文本、语音）的主流结构，靠“循环”记住前文。LSTM 加了门控机制，缓解了长序列“遗忘”问题。",
+   video:"https://www.youtube.com/watch?v=YCzL96nL7j0", wiki:"https://zh.wikipedia.org/wiki/長短期記憶"},
+
+  {abbr:"Overfitting", full:"Overfitting", zh:"过拟合", cat:"训练",
+   desc:"模型把训练数据“背得太死”，连噪声都记住了，导致在新数据上表现很差。就像死记答案的学生遇到新题就不会。",
+   video:"https://www.youtube.com/watch?v=EuBBz3bI-aA", wiki:"https://zh.wikipedia.org/wiki/過適"},
+
+  {abbr:"Supervised", full:"Supervised Learning", zh:"监督学习", cat:"训练",
+   desc:"用带标准答案（标签）的数据训练模型，让它学会输入到输出的映射，如“这张图是猫”。是最常见的机器学习范式。",
+   video:"https://www.youtube.com/watch?v=4qVRBYAdLAo", wiki:"https://zh.wikipedia.org/wiki/監督式學習"},
+
+  {abbr:"Quantization", full:"Quantization", zh:"量化", cat:"推理部署",
+   desc:"把模型参数从高精度数字（如 32 位）压缩成低精度（如 4/8 位），大幅减小体积和算力需求，让大模型能跑在手机/笔记本上，代价是轻微精度损失。",
+   video:"https://www.youtube.com/watch?v=ZKdMbQq5T30", wiki:"https://en.wikipedia.org/wiki/Quantization_(signal_processing)"},
+
+  {abbr:"Inference", full:"Inference", zh:"推理", cat:"推理部署",
+   desc:"指模型“使用”阶段——拿训练好的模型对新输入做预测/生成。区别于“训练”阶段。日常用 ChatGPT 就是在做推理。",
+   video:"https://www.youtube.com/watch?v=RwUqsUOZx1c", wiki:"https://en.wikipedia.org/wiki/Inference_engine"},
+
+  {abbr:"Multimodal", full:"Multimodal Model", zh:"多模态模型", cat:"Agent应用",
+   desc:"能同时理解和处理多种类型数据（文字、图像、音频、视频）的模型，如能“看图说话”的 GPT-4o、Claude。",
+   video:"https://www.youtube.com/watch?v=WqJyrZGdT7Q", wiki:"https://en.wikipedia.org/wiki/Multimodal_learning"},
+
+  /* ===== 以下名词来自「硅谷101」近两三年的芯片/算力/内存/AI 深度内容 ===== */
+  {abbr:"HBM", full:"High Bandwidth Memory", zh:"高带宽内存", cat:"硬件算力",
+   desc:"把多块 DRAM 内存芯片垂直堆叠、紧贴在 GPU 旁边的高速内存。带宽是普通内存的数倍，是喂饱 AI 芯片、决定大模型训练速度的关键瓶颈。SK海力士、三星、美光三家垄断，目前已到 HBM3e、迈向 HBM4。",
+   video:"https://www.youtube.com/@TheValley101/search?query=HBM", wiki:"https://zh.wikipedia.org/wiki/高頻寬記憶體"},
+
+  {abbr:"CoWoS", full:"Chip on Wafer on Substrate", zh:"先进封装（台积电）", cat:"硬件算力",
+   desc:"台积电的先进封装技术，把 GPU 芯片和 HBM 内存“拼”在同一块基板上，缩短互联距离、提升带宽。产能严重不足，一度是英伟达 H100/B200 出货的最大卡点。",
+   video:"https://www.youtube.com/@TheValley101/search?query=CoWoS+封装", wiki:"https://en.wikipedia.org/wiki/Chip-on-wafer-on-substrate"},
+
+  {abbr:"TSV", full:"Through-Silicon Via", zh:"硅通孔", cat:"硬件算力",
+   desc:"在芯片上垂直打孔、用金属填充，实现上下层芯片直接互联的技术。是 HBM 内存“叠罗汉”式堆叠的物理基础。",
+   video:"https://www.youtube.com/@TheValley101/search?query=HBM+堆叠", wiki:"https://en.wikipedia.org/wiki/Through-silicon_via"},
+
+  {abbr:"DRAM", full:"Dynamic Random Access Memory", zh:"动态随机存取存储器", cat:"硬件算力",
+   desc:"电脑/手机里最主流的“内存”，断电即失、读写极快，用来临时存放正在运行的数据。HBM 就是把 DRAM 堆叠而成的高端形态。",
+   video:"https://www.youtube.com/@TheValley101/search?query=内存+DRAM", wiki:"https://zh.wikipedia.org/wiki/動態隨機存取記憶體"},
+
+  {abbr:"KV Cache", full:"Key-Value Cache", zh:"键值缓存", cat:"硬件算力",
+   desc:"大模型生成文字时，把已算过的中间结果（注意力的 Key/Value）缓存起来，避免重复计算。能大幅加速推理，但很吃显存——上下文越长，KV Cache 占用越大。",
+   video:"https://www.youtube.com/@TheValley101/search?query=推理+缓存", wiki:"https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)#KV_caching"},
+
+  {abbr:"TPU", full:"Tensor Processing Unit", zh:"张量处理单元", cat:"硬件算力",
+   desc:"谷歌自研的 AI 专用芯片，专为神经网络的矩阵运算优化，是英伟达 GPU 在 AI 算力上的主要挑战者之一。",
+   video:"https://www.youtube.com/@TheValley101/search?query=TPU", wiki:"https://zh.wikipedia.org/wiki/張量處理單元"},
+
+  {abbr:"GPU", full:"Graphics Processing Unit", zh:"图形处理器", cat:"硬件算力",
+   desc:"原本用于游戏图形渲染，因擅长大规模并行计算而成为 AI 训练的主力芯片。英伟达凭 GPU + CUDA 生态垄断了 AI 算力市场。",
+   video:"https://www.youtube.com/@TheValley101/search?query=英伟达+GPU", wiki:"https://zh.wikipedia.org/wiki/圖形處理器"},
+
+  {abbr:"NPU", full:"Neural Processing Unit", zh:"神经网络处理器", cat:"硬件算力",
+   desc:"专为 AI 推理优化的处理器，常集成在手机/电脑芯片里（如苹果、高通），让设备能本地、低功耗地跑 AI。",
+   video:"https://www.youtube.com/@TheValley101/search?query=端侧+AI+芯片", wiki:"https://en.wikipedia.org/wiki/AI_accelerator"},
+
+  {abbr:"FLOPS", full:"Floating Point Operations Per Second", zh:"每秒浮点运算次数", cat:"硬件算力",
+   desc:"衡量算力的核心单位，指芯片每秒能做多少次浮点运算。常见 TFLOPS（万亿次）、PFLOPS（千万亿次），数字越大算力越强。",
+   video:"https://www.youtube.com/@TheValley101/search?query=算力", wiki:"https://zh.wikipedia.org/wiki/每秒浮点运算次数"},
+
+  {abbr:"Chiplet", full:"Chiplet", zh:"芯粒", cat:"硬件算力",
+   desc:"把一颗大芯片拆成多个小模块（芯粒）分别制造，再封装拼接。能提升良率、降低成本，是绕开制程极限的重要思路。",
+   video:"https://www.youtube.com/@TheValley101/search?query=Chiplet+芯片", wiki:"https://en.wikipedia.org/wiki/Chiplet"},
+
+  {abbr:"制程", full:"Process Node", zh:"制程节点", cat:"硬件算力",
+   desc:"指芯片制造工艺的精细度，如 7nm、5nm、3nm。数字越小，单位面积塞的晶体管越多、越省电越快。是台积电、英特尔、三星竞争的核心战场。",
+   video:"https://www.youtube.com/@TheValley101/search?query=制程+台积电", wiki:"https://zh.wikipedia.org/wiki/半導體製程"},
+
+  {abbr:"Scaling Law", full:"Scaling Law", zh:"规模定律", cat:"前沿",
+   desc:"经验规律：模型能力会随着参数量、数据量、算力的增加而可预测地提升。这是各大公司不计成本堆算力、堆数据的理论依据。",
+   video:"https://www.youtube.com/@TheValley101/search?query=Scaling+Law+大模型", wiki:"https://en.wikipedia.org/wiki/Neural_scaling_law"},
+
+  {abbr:"Distillation", full:"Knowledge Distillation", zh:"知识蒸馏", cat:"训练",
+   desc:"用一个庞大的“教师模型”来训练一个小巧的“学生模型”，把大模型的能力“浓缩”进小模型，从而在低成本下保留大部分性能。",
+   video:"https://www.youtube.com/@TheValley101/search?query=蒸馏+小模型", wiki:"https://en.wikipedia.org/wiki/Knowledge_distillation"},
+
+  {abbr:"LoRA", full:"Low-Rank Adaptation", zh:"低秩适配", cat:"训练",
+   desc:"一种高效微调方法：冻结原模型，只额外训练一小撮新增参数，就能让大模型适配新任务。省显存、省成本，是定制化模型的主流手段。",
+   video:"https://www.youtube.com/@TheValley101/search?query=微调+LoRA", wiki:"https://en.wikipedia.org/wiki/Fine-tuning_(deep_learning)#Low-rank_adaptation"},
+
+  {abbr:"Foundation Model", full:"Foundation Model", zh:"基础模型", cat:"基础",
+   desc:"在超大规模数据上预训练、可适配下游各种任务的通用大模型（如 GPT、Claude、Gemini）。是上层无数 AI 应用的“地基”。",
+   video:"https://www.youtube.com/@TheValley101/search?query=基础模型+大模型", wiki:"https://en.wikipedia.org/wiki/Foundation_model"},
+
+  {abbr:"具身智能", full:"Embodied AI / Embodied Intelligence", zh:"具身智能", cat:"前沿",
+   desc:"让 AI 拥有“身体”（机器人本体），通过与物理世界交互来感知和行动，而不只是在屏幕里对话。被视为通往通用人工智能的关键路径。",
+   video:"https://www.youtube.com/@TheValley101/search?query=具身智能+机器人", wiki:"https://en.wikipedia.org/wiki/Embodied_cognition"},
+
+  {abbr:"VLA", full:"Vision-Language-Action Model", zh:"视觉-语言-动作模型", cat:"前沿",
+   desc:"机器人领域的大模型架构：输入摄像头画面（视觉）和指令（语言），直接输出机器人的动作。被称为机器人的“GPT 时刻”。",
+   video:"https://www.youtube.com/@TheValley101/search?query=VLA+具身", wiki:"https://en.wikipedia.org/wiki/Vision-language-action_model"},
+
+  {abbr:"World Model", full:"World Model", zh:"世界模型", cat:"前沿",
+   desc:"让 AI 在内部建立一个对物理世界运行规律的“模拟器”，从而能预测“如果这样做会发生什么”，再据此规划行动。是机器人、自动驾驶的核心方向。",
+   video:"https://www.youtube.com/@TheValley101/search?query=世界模型", wiki:"https://en.wikipedia.org/wiki/World_model"},
+
+  {abbr:"FDE", full:"Forward Deployed Engineer", zh:"前向部署工程师", cat:"前沿",
+   desc:"驻扎在客户现场、把 AI 产品真正落地到客户业务里的工程师岗位。随着 AI 商业化，成为硅谷最火的新职位之一（源自 Palantir）。",
+   video:"https://www.youtube.com/@TheValley101/search?query=FDE+工程师", wiki:"https://en.wikipedia.org/wiki/Palantir_Technologies"},
+
+  /* ===== 公司 / 模型 / 产品：名字由来 + 公司是干什么的 ===== */
+  {abbr:"GPT", full:"Generative Pre-trained Transformer", zh:"OpenAI 的模型家族", cat:"模型产品",
+   desc:"名字直译为“生成式·预训练·变换器”，三个词正好是它的三大技术支柱。ChatGPT = Chat（聊天）+ GPT。2026 年主力是 GPT-5 系列（如 GPT-5.5）；其中 GPT-4o 的“o”是 omni（全能），代表能同时处理文字/图像/语音的多模态能力。",
+   video:"https://www.youtube.com/@TheValley101/search?query=GPT+OpenAI", wiki:"https://en.wikipedia.org/wiki/Generative_pre-trained_transformer"},
+
+  {abbr:"Claude", full:"Claude (by Anthropic)", zh:"Anthropic 的模型家族", cat:"模型产品",
+   desc:"名字致敬“信息论之父”克劳德·香农（Claude Shannon）。所有型号名都取自“由短到长”的文学/音乐体裁，用体裁的“体量”隐喻模型档位，能力从低到高排成一条阶梯：Haiku（俳句）→ Sonnet（十四行诗）→ Opus（作品）→ Mythos（神话）→ Fable（寓言）。每个名字的具体来历见下面各自的词条。",
+   video:"https://www.youtube.com/@TheValley101/search?query=Claude+Anthropic", wiki:"https://en.wikipedia.org/wiki/Claude_(language_model)"},
+
+  {abbr:"Claude Code", full:"Claude Code", zh:"Anthropic 的 AI 编程工具", cat:"模型产品",
+   desc:"Anthropic 出的命令行 AI 编程助手（agent），能读写代码、跑命令、自主完成开发任务。它背后调用的就是 Claude 模型——你可以切换用 Opus（最强）、Sonnet（均衡）、Haiku（快）等不同档位来干活。",
+   video:"https://www.youtube.com/@TheValley101/search?query=Claude+Code+编程", wiki:"https://www.anthropic.com/claude-code"},
+
+  {abbr:"Gemini", full:"Google Gemini", zh:"谷歌的模型家族", cat:"模型产品",
+   desc:"Gemini 是拉丁语“双子座”。一层含义是谷歌两大 AI 团队 Google Brain 与 DeepMind 合并“合体”；另一层是它原生多模态、文字与图像“双生”。由 Google DeepMind 开发。",
+   video:"https://www.youtube.com/@TheValley101/search?query=谷歌+Gemini", wiki:"https://en.wikipedia.org/wiki/Gemini_(language_model)"},
+
+  {abbr:"Llama", full:"Large Language Model Meta AI", zh:"Meta 的开源模型", cat:"模型产品",
+   desc:"名字其实是“Large Language Model Meta AI”的缩写（顺便和草泥马 llama 同名）。Meta（脸书母公司）出品，是“开源/开放权重”大模型的代表，催生了海量社区微调模型。",
+   video:"https://www.youtube.com/@TheValley101/search?query=Llama+开源+Meta", wiki:"https://en.wikipedia.org/wiki/Llama_(language_model)"},
+
+  {abbr:"Grok", full:"Grok (by xAI)", zh:"马斯克 xAI 的模型", cat:"模型产品",
+   desc:"“grok”一词出自海因莱因 1961 年科幻小说《异乡异客》，火星语意为“彻底理解、融会贯通到成为自身的一部分”。马斯克用它命名，寓意要造出真正“看懂世界”的 AI。",
+   video:"https://www.youtube.com/@TheValley101/search?query=马斯克+Grok+xAI", wiki:"https://en.wikipedia.org/wiki/Grok_(chatbot)"},
+
+  {abbr:"Qwen", full:"Qwen / 通义千问", zh:"阿里巴巴的大模型", cat:"模型产品",
+   desc:"阿里巴巴自研的大模型家族，中文名“通义千问”。开源版本在全球社区影响力很大，是中国大模型的代表之一。",
+   video:"https://www.youtube.com/@TheValley101/search?query=通义千问+阿里", wiki:"https://en.wikipedia.org/wiki/Qwen"},
+
+  {abbr:"OpenAI", full:"OpenAI", zh:"ChatGPT 背后的公司", cat:"公司机构",
+   desc:"2015 年成立，使命是“安全地实现通用人工智能（AGI）”。代表产品：ChatGPT、GPT 系列、视频模型 Sora、编程工具 Codex。微软是其主要投资方与云合作伙伴。名字里的“Open”原指开放，但如今旗舰模型多为闭源。",
+   video:"https://www.youtube.com/@TheValley101/search?query=OpenAI", wiki:"https://en.wikipedia.org/wiki/OpenAI"},
+
+  {abbr:"Anthropic", full:"Anthropic", zh:"Claude 背后的公司", cat:"公司机构",
+   desc:"2021 年由一批前 OpenAI 核心成员（Dario、Daniela Amodei 等）创立，主打“AI 安全”，提出“宪法 AI”理念。产品：Claude、Claude Code。亚马逊、谷歌是主要投资方。“anthropic”意为“与人类相关的”。",
+   video:"https://www.youtube.com/@TheValley101/search?query=Anthropic+Claude", wiki:"https://en.wikipedia.org/wiki/Anthropic"},
+
+  {abbr:"Nvidia", full:"NVIDIA / 英伟达", zh:"AI 算力霸主", cat:"公司机构",
+   desc:"全球 AI 算力的绝对核心。靠 GPU（如 H100、B200、GB200）加上 CUDA 软件生态垄断了大模型训练市场，一度成为全球市值最高的公司之一。它只设计芯片，制造交给台积电。",
+   video:"https://www.youtube.com/@TheValley101/search?query=英伟达+Nvidia", wiki:"https://zh.wikipedia.org/wiki/輝達"},
+
+  {abbr:"TSMC", full:"Taiwan Semiconductor / 台积电", zh:"全球最大芯片代工厂", cat:"公司机构",
+   desc:"全球最大的晶圆代工厂。英伟达、苹果、AMD 的先进芯片几乎都由它制造，先进封装 CoWoS 也是它的拿手技术。是整个 AI 硬件链的咽喉之一。",
+   video:"https://www.youtube.com/@TheValley101/search?query=台积电+TSMC", wiki:"https://zh.wikipedia.org/wiki/台積電"},
+
+  {abbr:"SK Hynix", full:"SK Hynix / SK海力士", zh:"HBM 内存龙头", cat:"公司机构",
+   desc:"韩国存储芯片巨头，主营 DRAM 内存与 NAND 闪存。最关键的身份是全球 HBM（高带宽内存）市场龙头，是英伟达 AI 芯片的 HBM 主力供应商——与英伟达、台积电深度绑定。主要竞争对手是三星和美光。",
+   video:"https://www.youtube.com/@TheValley101/search?query=海力士+HBM", wiki:"https://zh.wikipedia.org/wiki/SK海力士"},
+
+  {abbr:"Samsung / Micron", full:"Samsung / Micron", zh:"另两大存储巨头", cat:"公司机构",
+   desc:"三星（韩国）与美光（美国）是和 SK海力士并列的存储三巨头，同样生产 DRAM、HBM 与闪存，共同主导着 AI 时代紧俏的内存供应。",
+   video:"https://www.youtube.com/@TheValley101/search?query=三星+美光+存储", wiki:"https://en.wikipedia.org/wiki/High_Bandwidth_Memory"},
+
+  {abbr:"ASML", full:"ASML / 阿斯麦", zh:"光刻机垄断者", cat:"公司机构",
+   desc:"荷兰公司，全球唯一能造出 EUV（极紫外）光刻机的厂商。没有它的设备，就造不出最先进制程的芯片，因此是全球半导体产业链的“总开关”。",
+   video:"https://www.youtube.com/@TheValley101/search?query=ASML+光刻机", wiki:"https://zh.wikipedia.org/wiki/ASML"},
+
+  {abbr:"Hugging Face", full:"Hugging Face", zh:"AI 界的 GitHub", cat:"公司机构",
+   desc:"开源 AI 社区与平台，托管了几十万个模型和数据集，开发者可以一键下载、分享、部署模型，被称为“AI 界的 GitHub”。logo 就是那个抱抱脸 🤗 表情。",
+   video:"https://www.youtube.com/@TheValley101/search?query=Hugging+Face+开源模型", wiki:"https://en.wikipedia.org/wiki/Hugging_Face"},
+
+  {abbr:"OpenRouter", full:"OpenRouter", zh:"大模型聚合平台", cat:"公司机构",
+   desc:"模型聚合平台（API 网关）：用一个统一接口就能调用 OpenAI、Anthropic、Google 等几百个模型，自动帮你路由、比价、容灾。想横向对比或随时切换模型时特别方便。",
+   video:"https://www.youtube.com/@TheValley101/search?query=大模型+API+聚合", wiki:"https://openrouter.ai/"},
+
+  {abbr:"DeepSeek", full:"DeepSeek / 深度求索", zh:"中国开源大模型黑马", cat:"公司机构",
+   desc:"中国大模型公司，背靠量化基金幻方。以极低的训练成本做出高性能、开源的模型，一度震动全球业界，是中国 AI 的代表之一。",
+   video:"https://www.youtube.com/@TheValley101/search?query=DeepSeek+深度求索", wiki:"https://en.wikipedia.org/wiki/DeepSeek"},
+
+  {abbr:"Mistral AI", full:"Mistral AI", zh:"欧洲开源大模型代表", cat:"公司机构",
+   desc:"法国大模型公司，欧洲 AI 的旗帜，主打开源与高效模型。名字取自法国南部地中海沿岸的强风“密史脱拉风（Mistral）”。",
+   video:"https://www.youtube.com/@TheValley101/search?query=Mistral+欧洲+大模型", wiki:"https://en.wikipedia.org/wiki/Mistral_AI"},
+
+  {abbr:"Cursor", full:"Cursor (by Anysphere)", zh:"爆火的 AI 编程工具", cat:"公司机构",
+   desc:"基于大模型的 AI 代码编辑器/编程 agent，能理解整个代码库、自动补全和改写代码，是这两年增长最快的 AI 应用之一。和 Claude Code 同属“AI 编程助手”赛道。",
+   video:"https://www.youtube.com/@TheValley101/search?query=Cursor+AI+编程", wiki:"https://en.wikipedia.org/wiki/Cursor_(code_editor)"},
+
+  /* ===== 工程/产品落地词条（大批扩充）===== */
+
+  /* —— 架构 / 基础概念 —— */
+  {abbr:"AI", full:"Artificial Intelligence", zh:"人工智能", cat:"基础",
+   desc:"让机器模拟人类智能（学习、推理、感知）的总领域，机器学习和深度学习都是它的子集。",
+   video:"https://www.youtube.com/results?search_query=人工智能+是什么", wiki:"https://zh.wikipedia.org/wiki/人工智能"},
+  {abbr:"ML", full:"Machine Learning", zh:"机器学习", cat:"基础",
+   desc:"让计算机从数据中自动学习规律、而非靠人写死规则的方法，是现代 AI 的核心。",
+   video:"https://www.youtube.com/results?search_query=机器学习+入门", wiki:"https://zh.wikipedia.org/wiki/机器学习"},
+  {abbr:"DL", full:"Deep Learning", zh:"深度学习", cat:"基础",
+   desc:"用多层神经网络（“深”指层数多）自动从海量数据中学特征的机器学习分支，是大模型的技术根基。",
+   video:"https://www.youtube.com/results?search_query=深度学习+入门", wiki:"https://zh.wikipedia.org/wiki/深度学习"},
+  {abbr:"Self-Attention", full:"Self-Attention", zh:"自注意力", cat:"基础",
+   desc:"句子里每个词都去“打量”同句其他所有词、算出关联权重，从而理解上下文。Transformer 的核心机制。",
+   video:"https://www.youtube.com/results?search_query=self+attention+explained", wiki:"https://en.wikipedia.org/wiki/Attention_(machine_learning)"},
+  {abbr:"Multi-Head Attention", full:"Multi-Head Attention", zh:"多头注意力", cat:"基础",
+   desc:"同时跑多组注意力（多个“头”），让模型从不同角度并行捕捉词与词的关系，再汇总。",
+   video:"https://www.youtube.com/results?search_query=multi+head+attention", wiki:"https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)"},
+  {abbr:"Positional Encoding", full:"Positional Encoding", zh:"位置编码", cat:"基础",
+   desc:"Transformer 本身不分先后顺序，靠位置编码给每个词加上“它在第几位”的信息，让模型理解词序。",
+   video:"https://www.youtube.com/results?search_query=positional+encoding+transformer", wiki:"https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)"},
+  {abbr:"RoPE", full:"Rotary Position Embedding", zh:"旋转位置编码", cat:"基础",
+   desc:"一种主流位置编码方式，用旋转向量的方式注入位置信息，能更好地支持超长上下文，被多数现代大模型采用。",
+   video:"https://www.youtube.com/results?search_query=rotary+position+embedding+RoPE", wiki:"https://en.wikipedia.org/wiki/Rotary_position_embedding"},
+  {abbr:"Encoder / Decoder", full:"Encoder / Decoder", zh:"编码器 / 解码器", cat:"基础",
+   desc:"编码器把输入“读懂”成内部表示，解码器据此“生成”输出。翻译模型常两者都用，GPT 类则只用解码器。",
+   video:"https://www.youtube.com/results?search_query=encoder+decoder+transformer", wiki:"https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)"},
+  {abbr:"Autoregressive", full:"Autoregressive Model", zh:"自回归", cat:"基础",
+   desc:"一个词一个词地生成、每次都把已生成内容当输入预测下一个词。GPT 类大模型的工作方式。",
+   video:"https://www.youtube.com/results?search_query=autoregressive+language+model", wiki:"https://en.wikipedia.org/wiki/Autoregressive_model"},
+  {abbr:"Parameters", full:"Parameters", zh:"参数（量）", cat:"基础",
+   desc:"模型内部可学习的数值（权重），数量常以 B（十亿）计。参数越多、容量越大，但也越吃算力，如“70B 模型”。",
+   video:"https://www.youtube.com/results?search_query=model+parameters+billion+explained", wiki:"https://en.wikipedia.org/wiki/Large_language_model"},
+  {abbr:"Latent Space", full:"Latent Space", zh:"潜空间", cat:"基础",
+   desc:"模型把数据压缩成的高维“语义空间”，相近含义的内容在其中位置也相近。生成模型就在这个空间里操作。",
+   video:"https://www.youtube.com/results?search_query=latent+space+explained", wiki:"https://en.wikipedia.org/wiki/Latent_space"},
+  {abbr:"MLP", full:"Multi-Layer Perceptron", zh:"多层感知机", cat:"基础",
+   desc:"最基础的全连接神经网络结构，由输入层、隐藏层、输出层堆叠而成，是更复杂网络的基本积木。",
+   video:"https://www.youtube.com/results?search_query=multilayer+perceptron", wiki:"https://en.wikipedia.org/wiki/Multilayer_perceptron"},
+  {abbr:"BERT", full:"Bidirectional Encoder Representations from Transformers", zh:"双向编码器表示模型", cat:"经典模型",
+   desc:"谷歌 2018 年提出的双向语言理解模型，擅长分类、搜索等理解类任务，开启了预训练时代，与生成式的 GPT 互为代表。",
+   video:"https://www.youtube.com/results?search_query=BERT+model+explained", wiki:"https://en.wikipedia.org/wiki/BERT_(language_model)"},
+  {abbr:"Seq2Seq", full:"Sequence-to-Sequence", zh:"序列到序列", cat:"经典模型",
+   desc:"输入一个序列、输出另一个序列的模型范式（如翻译、摘要），是 Transformer 之前机器翻译的主流框架。",
+   video:"https://www.youtube.com/results?search_query=seq2seq+model", wiki:"https://en.wikipedia.org/wiki/Seq2seq"},
+  {abbr:"Tokenizer", full:"Tokenizer", zh:"分词器", cat:"基础",
+   desc:"把文本切成 token 的工具/算法，决定了模型如何“看见”文字。常用 BPE 等子词切分法。",
+   video:"https://www.youtube.com/results?search_query=tokenizer+LLM+BPE", wiki:"https://en.wikipedia.org/wiki/Byte_pair_encoding"},
+  {abbr:"BPE", full:"Byte Pair Encoding", zh:"字节对编码", cat:"基础",
+   desc:"主流分词算法：把高频字符组合合并成一个 token，平衡“词表大小”与“覆盖率”，几乎所有大模型都在用。",
+   video:"https://www.youtube.com/results?search_query=byte+pair+encoding", wiki:"https://en.wikipedia.org/wiki/Byte_pair_encoding"},
+  {abbr:"Logits", full:"Logits", zh:"对数几率", cat:"基础",
+   desc:"模型在输出每个候选 token 前算出的原始分数，经 Softmax 转成概率后再采样。",
+   video:"https://www.youtube.com/results?search_query=logits+softmax+neural+network", wiki:"https://en.wikipedia.org/wiki/Logit"},
+
+  /* —— 训练 / 算法 —— */
+  {abbr:"SFT", full:"Supervised Fine-Tuning", zh:"监督微调", cat:"训练",
+   desc:"用人工写好的“问题—优质回答”样本微调预训练模型，让它学会按指令作答。是 RLHF 之前的关键一步。",
+   video:"https://www.youtube.com/results?search_query=supervised+fine+tuning+LLM", wiki:"https://en.wikipedia.org/wiki/Fine-tuning_(deep_learning)"},
+  {abbr:"DPO", full:"Direct Preference Optimization", zh:"直接偏好优化", cat:"训练",
+   desc:"对齐大模型的新方法：直接用“好回答优于坏回答”的偏好数据训练，省去 RLHF 里复杂的奖励模型，更简单稳定。",
+   video:"https://www.youtube.com/results?search_query=direct+preference+optimization+DPO", wiki:"https://en.wikipedia.org/wiki/Direct_preference_optimization"},
+  {abbr:"PPO", full:"Proximal Policy Optimization", zh:"近端策略优化", cat:"训练",
+   desc:"一种强化学习算法，是经典 RLHF 流程中用来根据奖励信号更新模型的核心方法。",
+   video:"https://www.youtube.com/results?search_query=proximal+policy+optimization", wiki:"https://en.wikipedia.org/wiki/Proximal_policy_optimization"},
+  {abbr:"Reward Model", full:"Reward Model", zh:"奖励模型", cat:"训练",
+   desc:"专门学习“人类觉得哪个回答更好”的模型，给主模型的输出打分，是 RLHF 的“裁判”。",
+   video:"https://www.youtube.com/results?search_query=reward+model+RLHF", wiki:"https://en.wikipedia.org/wiki/Reinforcement_learning_from_human_feedback"},
+  {abbr:"Constitutional AI", full:"Constitutional AI", zh:"宪法 AI", cat:"训练",
+   desc:"Anthropic 提出的对齐方法：给模型一套书面“原则（宪法）”，让它据此自我批评和改进，减少对大量人工标注的依赖。",
+   video:"https://www.youtube.com/results?search_query=constitutional+AI+anthropic", wiki:"https://en.wikipedia.org/wiki/Constitutional_AI"},
+  {abbr:"RL", full:"Reinforcement Learning", zh:"强化学习", cat:"训练",
+   desc:"让智能体通过“试错—获得奖励/惩罚”来学习最优策略，像训练宠物。是 AlphaGo 和 RLHF 的底层范式。",
+   video:"https://www.youtube.com/results?search_query=reinforcement+learning+explained", wiki:"https://zh.wikipedia.org/wiki/强化学习"},
+  {abbr:"Self-Supervised", full:"Self-Supervised Learning", zh:"自监督学习", cat:"训练",
+   desc:"不需人工标注，让模型从数据本身构造任务（如“遮住一个词让它猜”）来学习。大模型预训练的核心方式。",
+   video:"https://www.youtube.com/results?search_query=self+supervised+learning", wiki:"https://en.wikipedia.org/wiki/Self-supervised_learning"},
+  {abbr:"Unsupervised", full:"Unsupervised Learning", zh:"无监督学习", cat:"训练",
+   desc:"用没有标签的数据，让模型自己发现结构和规律（如聚类）。与监督学习相对。",
+   video:"https://www.youtube.com/results?search_query=unsupervised+learning", wiki:"https://zh.wikipedia.org/wiki/无监督学习"},
+  {abbr:"Transfer Learning", full:"Transfer Learning", zh:"迁移学习", cat:"训练",
+   desc:"把在一个任务上学到的知识迁移到另一个相关任务，省时省数据。“预训练+微调”就是它的典型应用。",
+   video:"https://www.youtube.com/results?search_query=transfer+learning", wiki:"https://zh.wikipedia.org/wiki/迁移学习"},
+  {abbr:"Loss Function", full:"Loss Function", zh:"损失函数", cat:"训练",
+   desc:"衡量模型预测与正确答案差距的函数，训练的目标就是让这个“损失”尽量小。",
+   video:"https://www.youtube.com/results?search_query=loss+function+machine+learning", wiki:"https://en.wikipedia.org/wiki/Loss_function"},
+  {abbr:"Cross-Entropy", full:"Cross-Entropy Loss", zh:"交叉熵损失", cat:"训练",
+   desc:"分类和语言模型最常用的损失函数，衡量预测概率分布与真实分布的差距。",
+   video:"https://www.youtube.com/results?search_query=cross+entropy+loss", wiki:"https://en.wikipedia.org/wiki/Cross-entropy"},
+  {abbr:"Perplexity", full:"Perplexity", zh:"困惑度", cat:"评估安全",
+   desc:"衡量语言模型“预测下一个词有多不确定”的指标，越低代表模型对语言把握得越好。",
+   video:"https://www.youtube.com/results?search_query=perplexity+language+model", wiki:"https://en.wikipedia.org/wiki/Perplexity"},
+  {abbr:"Learning Rate", full:"Learning Rate", zh:"学习率", cat:"训练",
+   desc:"每次参数更新“迈多大步”的超参数。太大易震荡发散，太小则训练慢，是最关键的调参之一。",
+   video:"https://www.youtube.com/results?search_query=learning+rate+deep+learning", wiki:"https://en.wikipedia.org/wiki/Learning_rate"},
+  {abbr:"Batch Size", full:"Batch Size", zh:"批大小", cat:"训练",
+   desc:"每次更新参数时一起喂给模型的样本数量。影响训练速度、显存占用和稳定性。",
+   video:"https://www.youtube.com/results?search_query=batch+size+training", wiki:"https://en.wikipedia.org/wiki/Stochastic_gradient_descent"},
+  {abbr:"Epoch", full:"Epoch", zh:"训练轮次", cat:"训练",
+   desc:"把整个训练数据集完整过一遍叫一个 epoch。通常要训练多个 epoch。",
+   video:"https://www.youtube.com/results?search_query=epoch+batch+iteration", wiki:"https://en.wikipedia.org/wiki/Epoch_(machine_learning)"},
+  {abbr:"Optimizer", full:"Optimizer", zh:"优化器", cat:"训练",
+   desc:"决定如何根据梯度更新参数的算法，如 SGD、Adam。好的优化器能让训练更快更稳。",
+   video:"https://www.youtube.com/results?search_query=optimizer+adam+sgd", wiki:"https://en.wikipedia.org/wiki/Stochastic_gradient_descent"},
+  {abbr:"Adam / AdamW", full:"Adaptive Moment Estimation", zh:"自适应矩估计优化器", cat:"训练",
+   desc:"目前最常用的优化器，能为每个参数自适应调整学习率。AdamW 是其改进版，几乎是训练大模型的默认选择。",
+   video:"https://www.youtube.com/results?search_query=adam+optimizer+explained", wiki:"https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam"},
+  {abbr:"Dropout", full:"Dropout", zh:"随机失活", cat:"训练",
+   desc:"训练时随机“关掉”一部分神经元，强迫网络不过度依赖某些节点，是防止过拟合的经典手段。",
+   video:"https://www.youtube.com/results?search_query=dropout+neural+network", wiki:"https://en.wikipedia.org/wiki/Dropout_(neural_networks)"},
+  {abbr:"Regularization", full:"Regularization", zh:"正则化", cat:"训练",
+   desc:"给训练加“约束”以防止模型过拟合的一类技术总称，如 L2 正则、Dropout 等。",
+   video:"https://www.youtube.com/results?search_query=regularization+machine+learning", wiki:"https://en.wikipedia.org/wiki/Regularization_(mathematics)"},
+  {abbr:"Underfitting", full:"Underfitting", zh:"欠拟合", cat:"训练",
+   desc:"模型太简单、没学够，连训练数据都拟合不好。与过拟合相对。",
+   video:"https://www.youtube.com/results?search_query=underfitting+overfitting", wiki:"https://en.wikipedia.org/wiki/Overfitting"},
+  {abbr:"Hyperparameter", full:"Hyperparameter", zh:"超参数", cat:"训练",
+   desc:"训练前需人为设定、不由模型自己学的配置，如学习率、批大小、层数。调它们叫“调参”。",
+   video:"https://www.youtube.com/results?search_query=hyperparameter+tuning", wiki:"https://en.wikipedia.org/wiki/Hyperparameter_(machine_learning)"},
+  {abbr:"Activation Function", full:"Activation Function", zh:"激活函数", cat:"训练",
+   desc:"给神经网络引入非线性的函数（如 ReLU），没有它网络只能拟合直线、无法学复杂规律。",
+   video:"https://www.youtube.com/results?search_query=activation+function+relu+gelu", wiki:"https://en.wikipedia.org/wiki/Activation_function"},
+  {abbr:"Softmax", full:"Softmax", zh:"归一化指数函数", cat:"训练",
+   desc:"把一组分数转换成加起来为 1 的概率分布，常用于模型输出层，决定“选哪个词/类别”。",
+   video:"https://www.youtube.com/results?search_query=softmax+function", wiki:"https://en.wikipedia.org/wiki/Softmax_function"},
+  {abbr:"Layer Norm", full:"Layer Normalization", zh:"层归一化", cat:"训练",
+   desc:"对每层的输出做标准化，稳定数值、加速收敛，是 Transformer 里不可或缺的组件。",
+   video:"https://www.youtube.com/results?search_query=layer+normalization", wiki:"https://en.wikipedia.org/wiki/Normalization_(machine_learning)"},
+  {abbr:"Residual Connection", full:"Residual Connection", zh:"残差连接", cat:"训练",
+   desc:"让输入“抄近路”直接加到输出上（跳跃连接），缓解深层网络梯度消失，使训练上百层成为可能。",
+   video:"https://www.youtube.com/results?search_query=residual+connection+resnet", wiki:"https://en.wikipedia.org/wiki/Residual_neural_network"},
+  {abbr:"QLoRA", full:"Quantized Low-Rank Adaptation", zh:"量化低秩微调", cat:"训练",
+   desc:"LoRA 的省显存升级版：先把模型量化压缩，再做 LoRA 微调，让在单张消费级显卡上微调大模型成为可能。",
+   video:"https://www.youtube.com/results?search_query=QLoRA+fine+tuning", wiki:"https://en.wikipedia.org/wiki/Fine-tuning_(deep_learning)"},
+  {abbr:"PEFT", full:"Parameter-Efficient Fine-Tuning", zh:"参数高效微调", cat:"训练",
+   desc:"只训练少量额外参数就能微调大模型的一类方法总称，LoRA、QLoRA 都属于它，目标是省钱省显存。",
+   video:"https://www.youtube.com/results?search_query=parameter+efficient+fine+tuning", wiki:"https://en.wikipedia.org/wiki/Fine-tuning_(deep_learning)"},
+  {abbr:"Catastrophic Forgetting", full:"Catastrophic Forgetting", zh:"灾难性遗忘", cat:"训练",
+   desc:"模型在学新任务时把旧任务的能力忘掉的现象，是持续学习和微调时要小心的问题。",
+   video:"https://www.youtube.com/results?search_query=catastrophic+forgetting", wiki:"https://en.wikipedia.org/wiki/Catastrophic_interference"},
+  {abbr:"Synthetic Data", full:"Synthetic Data", zh:"合成数据", cat:"训练",
+   desc:"由 AI 自己生成（而非真实采集）的训练数据。在真实数据枯竭的当下，越来越重要。",
+   video:"https://www.youtube.com/results?search_query=synthetic+data+LLM+training", wiki:"https://en.wikipedia.org/wiki/Synthetic_data"},
+
+  /* —— 推理 / 部署 / 服务 —— */
+  {abbr:"vLLM", full:"vLLM", zh:"高吞吐推理引擎", cat:"推理部署",
+   desc:"流行的开源大模型推理框架，靠 PagedAttention 等技术大幅提升吞吐、降低显存浪费，是部署模型服务的常用利器。",
+   video:"https://www.youtube.com/results?search_query=vLLM+inference", wiki:"https://en.wikipedia.org/wiki/VLLM"},
+  {abbr:"PagedAttention", full:"PagedAttention", zh:"分页注意力", cat:"推理部署",
+   desc:"借鉴操作系统“内存分页”思路管理 KV Cache，减少显存碎片浪费，是 vLLM 高效的关键技术。",
+   video:"https://www.youtube.com/results?search_query=pagedattention+vllm", wiki:"https://en.wikipedia.org/wiki/VLLM"},
+  {abbr:"Flash Attention", full:"Flash Attention", zh:"闪电注意力", cat:"推理部署",
+   desc:"一种高效计算注意力的算法，通过优化显存读写大幅加速训练和推理、并省显存，已成行业标配。",
+   video:"https://www.youtube.com/results?search_query=flash+attention", wiki:"https://en.wikipedia.org/wiki/Attention_(machine_learning)"},
+  {abbr:"Continuous Batching", full:"Continuous Batching", zh:"连续批处理", cat:"推理部署",
+   desc:"推理时动态地把不同用户的请求拼成一批一起算，谁先生成完就先返回，大幅提升 GPU 利用率和吞吐。",
+   video:"https://www.youtube.com/results?search_query=continuous+batching+LLM", wiki:"https://en.wikipedia.org/wiki/VLLM"},
+  {abbr:"Speculative Decoding", full:"Speculative Decoding", zh:"投机解码", cat:"推理部署",
+   desc:"让一个小模型先“抢答”几个词，大模型一次性批量验证，验对就直接采用，从而加速生成。",
+   video:"https://www.youtube.com/results?search_query=speculative+decoding", wiki:"https://en.wikipedia.org/wiki/Large_language_model"},
+  {abbr:"Tensor Parallelism", full:"Tensor Parallelism", zh:"张量并行", cat:"推理部署",
+   desc:"把一层的矩阵运算横切，分到多张 GPU 上同时算，用于单卡装不下的大模型。",
+   video:"https://www.youtube.com/results?search_query=tensor+parallelism", wiki:"https://en.wikipedia.org/wiki/Data_parallelism"},
+  {abbr:"Pipeline Parallelism", full:"Pipeline Parallelism", zh:"流水线并行", cat:"推理部署",
+   desc:"把模型按层切成几段，分别放在不同 GPU 上像流水线一样接力计算。",
+   video:"https://www.youtube.com/results?search_query=pipeline+parallelism+deep+learning", wiki:"https://en.wikipedia.org/wiki/Data_parallelism"},
+  {abbr:"Data Parallelism", full:"Data Parallelism", zh:"数据并行", cat:"推理部署",
+   desc:"每张 GPU 存一份完整模型、各算一批不同数据，再同步梯度。最常见的分布式训练方式。",
+   video:"https://www.youtube.com/results?search_query=data+parallelism+training", wiki:"https://en.wikipedia.org/wiki/Data_parallelism"},
+  {abbr:"ZeRO / FSDP", full:"Zero Redundancy Optimizer / Fully Sharded Data Parallel", zh:"显存分片并行", cat:"推理部署",
+   desc:"把模型参数、梯度、优化器状态切片分散到多卡，消除冗余存储，让训练超大模型成为可能（DeepSpeed / PyTorch 的核心技术）。",
+   video:"https://www.youtube.com/results?search_query=ZeRO+FSDP+training", wiki:"https://en.wikipedia.org/wiki/DeepSpeed"},
+  {abbr:"DeepSpeed", full:"DeepSpeed", zh:"微软大模型训练库", cat:"推理部署",
+   desc:"微软开源的深度学习优化库，提供 ZeRO 等显存优化技术，是训练超大模型的常用框架。",
+   video:"https://www.youtube.com/results?search_query=deepspeed+microsoft", wiki:"https://en.wikipedia.org/wiki/DeepSpeed"},
+  {abbr:"Gradient Checkpointing", full:"Gradient Checkpointing", zh:"梯度检查点", cat:"推理部署",
+   desc:"训练时只保存部分中间结果、需要时再重算，用“多算一点”换“省大量显存”。",
+   video:"https://www.youtube.com/results?search_query=gradient+checkpointing", wiki:"https://en.wikipedia.org/wiki/Automatic_differentiation"},
+  {abbr:"Mixed Precision", full:"Mixed Precision Training", zh:"混合精度训练", cat:"推理部署",
+   desc:"训练时混用低精度（FP16/BF16）和高精度数字，加速计算、省显存，同时保持稳定。",
+   video:"https://www.youtube.com/results?search_query=mixed+precision+training", wiki:"https://en.wikipedia.org/wiki/Mixed-precision_arithmetic"},
+  {abbr:"BF16 / FP16", full:"Brain Float 16 / Float 16", zh:"半精度浮点", cat:"推理部署",
+   desc:"用 16 位表示一个数（普通是 32 位），减半显存和带宽需求。BF16 范围更大、训练更稳，是大模型常用格式。",
+   video:"https://www.youtube.com/results?search_query=bf16+fp16+deep+learning", wiki:"https://en.wikipedia.org/wiki/Bfloat16_floating-point_format"},
+  {abbr:"FP8", full:"Float 8", zh:"8 位浮点", cat:"推理部署",
+   desc:"更激进的 8 位浮点格式，进一步省算力和显存，是英伟达新一代芯片（Hopper/Blackwell）训练提速的关键。",
+   video:"https://www.youtube.com/results?search_query=FP8+training+nvidia", wiki:"https://en.wikipedia.org/wiki/Minifloat"},
+  {abbr:"GPTQ / AWQ", full:"GPTQ / Activation-aware Weight Quantization", zh:"权重量化方法", cat:"推理部署",
+   desc:"两种主流的训练后量化算法，把模型压到 4 位仍尽量保精度，让大模型能跑在小显卡上。",
+   video:"https://www.youtube.com/results?search_query=GPTQ+AWQ+quantization", wiki:"https://en.wikipedia.org/wiki/Quantization_(signal_processing)"},
+  {abbr:"GGUF", full:"GGUF", zh:"本地模型文件格式", cat:"推理部署",
+   desc:"llama.cpp 生态使用的模型打包格式，把量化后的模型存成单文件，方便在个人电脑上加载运行。",
+   video:"https://www.youtube.com/results?search_query=GGUF+llama.cpp", wiki:"https://en.wikipedia.org/wiki/Llama.cpp"},
+  {abbr:"llama.cpp", full:"llama.cpp", zh:"轻量本地推理引擎", cat:"推理部署",
+   desc:"用 C++ 写的开源项目，能在普通 CPU/笔记本上高效跑量化后的大模型，是本地 AI 的基石。",
+   video:"https://www.youtube.com/results?search_query=llama.cpp", wiki:"https://en.wikipedia.org/wiki/Llama.cpp"},
+  {abbr:"Ollama", full:"Ollama", zh:"本地大模型一键运行工具", cat:"推理部署",
+   desc:"让你用一条命令就在本地电脑下载并运行各种开源大模型的工具，对个人离线使用极友好。",
+   video:"https://www.youtube.com/results?search_query=ollama+local+LLM", wiki:"https://en.wikipedia.org/wiki/Ollama"},
+  {abbr:"TensorRT", full:"TensorRT", zh:"英伟达推理加速库", cat:"推理部署",
+   desc:"英伟达的高性能推理优化库，把模型针对其 GPU 深度优化以榨干算力、降低延迟。",
+   video:"https://www.youtube.com/results?search_query=tensorrt+nvidia", wiki:"https://en.wikipedia.org/wiki/TensorRT"},
+  {abbr:"ONNX", full:"Open Neural Network Exchange", zh:"开放神经网络交换格式", cat:"推理部署",
+   desc:"一种通用的模型交换格式，让模型能在不同框架（PyTorch、TensorFlow）和硬件间迁移部署。",
+   video:"https://www.youtube.com/results?search_query=ONNX+explained", wiki:"https://en.wikipedia.org/wiki/Open_Neural_Network_Exchange"},
+  {abbr:"Latency", full:"Latency", zh:"延迟", cat:"推理部署",
+   desc:"从发出请求到收到结果所花的时间。对话/实时场景对延迟极敏感。",
+   video:"https://www.youtube.com/results?search_query=latency+vs+throughput", wiki:"https://en.wikipedia.org/wiki/Latency_(engineering)"},
+  {abbr:"Throughput", full:"Throughput", zh:"吞吐量", cat:"推理部署",
+   desc:"单位时间内系统能处理的请求/token 数量。和延迟常需权衡，是衡量推理服务效率的核心指标。",
+   video:"https://www.youtube.com/results?search_query=throughput+LLM+serving", wiki:"https://en.wikipedia.org/wiki/Throughput"},
+  {abbr:"TTFT", full:"Time To First Token", zh:"首字延迟", cat:"推理部署",
+   desc:"从你发送消息到屏幕上蹦出第一个字的时间，直接决定“感觉快不快”。",
+   video:"https://www.youtube.com/results?search_query=time+to+first+token+LLM", wiki:"https://en.wikipedia.org/wiki/Large_language_model"},
+  {abbr:"Pruning", full:"Pruning", zh:"剪枝", cat:"推理部署",
+   desc:"把模型里不重要的连接/神经元“剪掉”，让模型更小更快，是模型压缩的常用手段。",
+   video:"https://www.youtube.com/results?search_query=model+pruning+neural+network", wiki:"https://en.wikipedia.org/wiki/Pruning_(artificial_neural_network)"},
+
+  /* —— RAG / 检索 —— */
+  {abbr:"Vector Database", full:"Vector Database", zh:"向量数据库", cat:"RAG检索",
+   desc:"专门存储和检索“向量（embedding）”的数据库，能按语义相似度快速找到最相关内容，是 RAG 的核心存储。",
+   video:"https://www.youtube.com/results?search_query=vector+database+explained", wiki:"https://en.wikipedia.org/wiki/Vector_database"},
+  {abbr:"Chunking", full:"Chunking", zh:"文本切块", cat:"RAG检索",
+   desc:"把长文档切成小段再做向量化的过程。切得好不好直接影响 RAG 检索的质量。",
+   video:"https://www.youtube.com/results?search_query=chunking+RAG", wiki:"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},
+  {abbr:"Reranking", full:"Reranking", zh:"重排序", cat:"RAG检索",
+   desc:"在初步检索出一批候选后，用更精细的模型重新排序，把最相关的排到最前，提升 RAG 准确率。",
+   video:"https://www.youtube.com/results?search_query=reranking+RAG", wiki:"https://en.wikipedia.org/wiki/Learning_to_rank"},
+  {abbr:"Semantic Search", full:"Semantic Search", zh:"语义检索", cat:"RAG检索",
+   desc:"按“意思”而非“关键词字面”来搜索，靠向量相似度实现，能搜到换了说法但意思相同的内容。",
+   video:"https://www.youtube.com/results?search_query=semantic+search", wiki:"https://en.wikipedia.org/wiki/Semantic_search"},
+  {abbr:"Hybrid Search", full:"Hybrid Search", zh:"混合检索", cat:"RAG检索",
+   desc:"把关键词检索（如 BM25）和语义向量检索结合起来，兼顾精确匹配与语义理解。",
+   video:"https://www.youtube.com/results?search_query=hybrid+search+RAG", wiki:"https://en.wikipedia.org/wiki/Search_engine"},
+  {abbr:"BM25", full:"Best Matching 25", zh:"关键词检索算法", cat:"RAG检索",
+   desc:"经典的基于关键词词频的文本检索打分算法，至今仍是搜索和混合检索的重要一环。",
+   video:"https://www.youtube.com/results?search_query=BM25+algorithm", wiki:"https://en.wikipedia.org/wiki/Okapi_BM25"},
+  {abbr:"Cosine Similarity", full:"Cosine Similarity", zh:"余弦相似度", cat:"RAG检索",
+   desc:"通过两个向量夹角的余弦值衡量它们有多“像”，是向量检索里判断语义相近的常用度量。",
+   video:"https://www.youtube.com/results?search_query=cosine+similarity+embeddings", wiki:"https://en.wikipedia.org/wiki/Cosine_similarity"},
+  {abbr:"ANN", full:"Approximate Nearest Neighbor", zh:"近似最近邻", cat:"RAG检索",
+   desc:"在海量向量里快速（牺牲一点点精度）找出最相似的若干个，是向量数据库高速检索的核心算法。",
+   video:"https://www.youtube.com/results?search_query=approximate+nearest+neighbor+search", wiki:"https://en.wikipedia.org/wiki/Nearest_neighbor_search"},
+  {abbr:"HNSW", full:"Hierarchical Navigable Small World", zh:"分层可导航小世界图", cat:"RAG检索",
+   desc:"主流的近似最近邻索引算法，用分层图结构实现又快又准的向量检索，被多数向量库采用。",
+   video:"https://www.youtube.com/results?search_query=HNSW+vector+search", wiki:"https://en.wikipedia.org/wiki/Nearest_neighbor_search"},
+  {abbr:"FAISS", full:"Facebook AI Similarity Search", zh:"向量检索库（Meta）", cat:"RAG检索",
+   desc:"Meta 开源的高效向量相似度检索库，能在十亿级向量上快速搜索，是很多 RAG 系统的底层引擎。",
+   video:"https://www.youtube.com/results?search_query=FAISS+vector+search", wiki:"https://en.wikipedia.org/wiki/FAISS"},
+  {abbr:"Pinecone", full:"Pinecone", zh:"托管向量数据库", cat:"公司机构",
+   desc:"流行的云端托管向量数据库服务，开箱即用，是搭建 RAG 应用的常见选择。竞品有 Weaviate、Milvus、Chroma、pgvector。",
+   video:"https://www.youtube.com/results?search_query=pinecone+vector+database", wiki:"https://en.wikipedia.org/wiki/Vector_database"},
+  {abbr:"Knowledge Graph", full:"Knowledge Graph", zh:"知识图谱", cat:"RAG检索",
+   desc:"用“实体—关系—实体”的网络结构组织知识（如“张三—就职于—某公司”），可与 RAG 结合提升推理能力（GraphRAG）。",
+   video:"https://www.youtube.com/results?search_query=knowledge+graph+explained", wiki:"https://en.wikipedia.org/wiki/Knowledge_graph"},
+
+  /* —— Agent / 应用 / 提示 —— */
+  {abbr:"MCP", full:"Model Context Protocol", zh:"模型上下文协议", cat:"Agent应用",
+   desc:"Anthropic 提出的开放标准，像“AI 界的 USB-C”，让大模型用统一方式连接外部工具、数据源和服务，已被广泛采用。",
+   video:"https://www.youtube.com/results?search_query=model+context+protocol+MCP", wiki:"https://en.wikipedia.org/wiki/Model_Context_Protocol"},
+  {abbr:"Tool Use", full:"Function Calling / Tool Use", zh:"工具调用 / 函数调用", cat:"Agent应用",
+   desc:"让大模型在需要时调用外部工具（搜索、计算、API），把结果拿回来再作答，是 agent 能力的基础。",
+   video:"https://www.youtube.com/results?search_query=function+calling+LLM", wiki:"https://en.wikipedia.org/wiki/Large_language_model"},
+  {abbr:"ReAct", full:"Reasoning and Acting", zh:"推理-行动框架", cat:"Agent应用",
+   desc:"一种 agent 范式：让模型交替进行“思考（推理）”和“行动（调用工具）”，边想边做地解决复杂任务。",
+   video:"https://www.youtube.com/results?search_query=ReAct+agent+LLM", wiki:"https://en.wikipedia.org/wiki/Intelligent_agent"},
+  {abbr:"Multi-Agent", full:"Multi-Agent System", zh:"多智能体系统", cat:"Agent应用",
+   desc:"多个 AI agent 分工协作（如规划者、执行者、审查者）共同完成任务，常比单个 agent 更强。",
+   video:"https://www.youtube.com/results?search_query=multi+agent+system+LLM", wiki:"https://en.wikipedia.org/wiki/Multi-agent_system"},
+  {abbr:"LangChain", full:"LangChain", zh:"大模型应用开发框架", cat:"公司机构",
+   desc:"流行的开源框架，把模型调用、提示、记忆、工具、检索等串成“链”，帮开发者快速搭 LLM 应用。同类还有 LlamaIndex。",
+   video:"https://www.youtube.com/results?search_query=langchain+tutorial", wiki:"https://en.wikipedia.org/wiki/LangChain"},
+  {abbr:"Structured Output", full:"Structured Output", zh:"结构化输出", cat:"Agent应用",
+   desc:"强制模型按指定格式（如 JSON）输出，方便程序直接解析使用，是把 AI 接入系统的关键能力。",
+   video:"https://www.youtube.com/results?search_query=structured+output+JSON+LLM", wiki:"https://en.wikipedia.org/wiki/JSON"},
+  {abbr:"System Prompt", full:"System Prompt", zh:"系统提示词", cat:"Agent应用",
+   desc:"在对话最前面给模型设定的“身份/规则/风格”指令，贯穿整段对话，决定 AI 的人设和行为边界。",
+   video:"https://www.youtube.com/results?search_query=system+prompt+LLM", wiki:"https://en.wikipedia.org/wiki/Prompt_engineering"},
+  {abbr:"Few-shot", full:"Few-shot Learning", zh:"少样本提示", cat:"Agent应用",
+   desc:"在提示里给模型几个示例，它就能照葫芦画瓢完成新任务，无需重新训练。",
+   video:"https://www.youtube.com/results?search_query=few+shot+prompting", wiki:"https://en.wikipedia.org/wiki/Prompt_engineering"},
+  {abbr:"Zero-shot", full:"Zero-shot Learning", zh:"零样本提示", cat:"Agent应用",
+   desc:"不给任何示例，仅凭一句指令就让模型完成任务，体现大模型的通用能力。",
+   video:"https://www.youtube.com/results?search_query=zero+shot+prompting", wiki:"https://en.wikipedia.org/wiki/Zero-shot_learning"},
+  {abbr:"ICL", full:"In-Context Learning", zh:"上下文学习", cat:"Agent应用",
+   desc:"大模型仅靠提示里的示例和说明就“现学现用”、不更新参数的能力。Few-shot 提示能奏效就是因为它。",
+   video:"https://www.youtube.com/results?search_query=in+context+learning+LLM", wiki:"https://en.wikipedia.org/wiki/Prompt_engineering"},
+  {abbr:"Vibe Coding", full:"Vibe Coding", zh:"氛围编程", cat:"Agent应用",
+   desc:"2025 年走红的说法：开发者主要用自然语言向 AI 描述需求、由 AI 写代码，自己更像“指挥”而非逐行手敲。",
+   video:"https://www.youtube.com/results?search_query=vibe+coding", wiki:"https://en.wikipedia.org/wiki/Vibe_coding"},
+  {abbr:"Computer Use", full:"Computer Use", zh:"电脑操作（智能体）", cat:"Agent应用",
+   desc:"让 AI 像人一样看屏幕、移动鼠标、点击和打字，从而自主操作软件完成任务。Anthropic、OpenAI 都已推出。",
+   video:"https://www.youtube.com/results?search_query=AI+computer+use+agent", wiki:"https://en.wikipedia.org/wiki/Intelligent_agent"},
+
+  /* —— 采样 / 生成参数 —— */
+  {abbr:"Temperature", full:"Temperature", zh:"温度", cat:"采样参数",
+   desc:"控制输出随机性的参数：低（如 0.2）更确定、稳重；高（如 1.0+）更发散、有创意。",
+   video:"https://www.youtube.com/results?search_query=temperature+LLM+sampling", wiki:"https://en.wikipedia.org/wiki/Softmax_function"},
+  {abbr:"Top-p", full:"Top-p / Nucleus Sampling", zh:"核采样", cat:"采样参数",
+   desc:"只从“累计概率达到 p”的最可能候选词里采样，动态控制候选范围，平衡多样性与质量。",
+   video:"https://www.youtube.com/results?search_query=top+p+nucleus+sampling", wiki:"https://en.wikipedia.org/wiki/Large_language_model"},
+  {abbr:"Top-k", full:"Top-k Sampling", zh:"Top-k 采样", cat:"采样参数",
+   desc:"每步只从概率最高的 k 个候选词里随机选，限制选词范围、避免选到离谱的词。",
+   video:"https://www.youtube.com/results?search_query=top+k+sampling+LLM", wiki:"https://en.wikipedia.org/wiki/Large_language_model"},
+  {abbr:"Greedy Decoding", full:"Greedy Decoding", zh:"贪心解码", cat:"采样参数",
+   desc:"每一步都直接选概率最高的那个词，输出最确定但可能呆板、缺乏多样性。",
+   video:"https://www.youtube.com/results?search_query=greedy+decoding+beam+search", wiki:"https://en.wikipedia.org/wiki/Beam_search"},
+  {abbr:"Beam Search", full:"Beam Search", zh:"束搜索", cat:"采样参数",
+   desc:"同时保留多条最优候选路径往下生成、最后选整体最好的，常用于翻译等追求确定性的任务。",
+   video:"https://www.youtube.com/results?search_query=beam+search+explained", wiki:"https://en.wikipedia.org/wiki/Beam_search"},
+  {abbr:"Max Tokens", full:"Max Tokens", zh:"最大生成长度", cat:"采样参数",
+   desc:"限制模型本次最多生成多少 token，防止输出过长、控制成本。",
+   video:"https://www.youtube.com/results?search_query=max+tokens+LLM+API", wiki:"https://en.wikipedia.org/wiki/Large_language_model"},
+  {abbr:"Logprobs", full:"Log Probabilities", zh:"对数概率", cat:"采样参数",
+   desc:"模型给每个输出 token 的“置信度”对数值，可用来分析模型有多确定、做不确定性估计。",
+   video:"https://www.youtube.com/results?search_query=logprobs+LLM", wiki:"https://en.wikipedia.org/wiki/Log_probability"},
+
+  /* —— 评估 / 安全 —— */
+  {abbr:"Benchmark", full:"Benchmark", zh:"基准测试", cat:"评估安全",
+   desc:"用统一的标准题库给模型打分、横向对比能力的测试集，如 MMLU、HumanEval。",
+   video:"https://www.youtube.com/results?search_query=LLM+benchmark+MMLU", wiki:"https://en.wikipedia.org/wiki/Benchmark_(computing)"},
+  {abbr:"MMLU", full:"Massive Multitask Language Understanding", zh:"多任务语言理解基准", cat:"评估安全",
+   desc:"涵盖 57 个学科的选择题基准，常用来衡量大模型的综合知识水平。",
+   video:"https://www.youtube.com/results?search_query=MMLU+benchmark", wiki:"https://en.wikipedia.org/wiki/MMLU"},
+  {abbr:"HumanEval", full:"HumanEval", zh:"代码能力基准", cat:"评估安全",
+   desc:"OpenAI 提出的编程基准，让模型根据描述写函数、用测试用例判对错，衡量代码生成能力。",
+   video:"https://www.youtube.com/results?search_query=humaneval+code+benchmark", wiki:"https://en.wikipedia.org/wiki/Large_language_model"},
+  {abbr:"Red Teaming", full:"Red Teaming", zh:"红队测试", cat:"评估安全",
+   desc:"主动用各种刁钻、恶意手段去“攻击”模型，找出它的漏洞和有害输出，从而提前加固。",
+   video:"https://www.youtube.com/results?search_query=AI+red+teaming", wiki:"https://en.wikipedia.org/wiki/Red_team"},
+  {abbr:"Jailbreak", full:"Jailbreak", zh:"越狱", cat:"评估安全",
+   desc:"用精心设计的提示绕过模型的安全限制，诱导它说出本不该说的内容。",
+   video:"https://www.youtube.com/results?search_query=LLM+jailbreak", wiki:"https://en.wikipedia.org/wiki/Prompt_injection"},
+  {abbr:"Prompt Injection", full:"Prompt Injection", zh:"提示注入", cat:"评估安全",
+   desc:"攻击者把恶意指令藏进输入或外部内容里，劫持 AI 的行为。是 agent 时代的头号安全风险。",
+   video:"https://www.youtube.com/results?search_query=prompt+injection+attack", wiki:"https://en.wikipedia.org/wiki/Prompt_injection"},
+  {abbr:"Alignment", full:"AI Alignment", zh:"对齐", cat:"评估安全",
+   desc:"让 AI 的目标和行为符合人类意图与价值观。是 AI 安全研究的核心命题。",
+   video:"https://www.youtube.com/results?search_query=AI+alignment", wiki:"https://en.wikipedia.org/wiki/AI_alignment"},
+  {abbr:"Guardrails", full:"Guardrails", zh:"护栏", cat:"评估安全",
+   desc:"加在模型输入/输出两端的过滤与约束机制，挡住有害、违规或跑题的内容，保证应用安全可控。",
+   video:"https://www.youtube.com/results?search_query=AI+guardrails+LLM", wiki:"https://en.wikipedia.org/wiki/AI_safety"},
+  {abbr:"Chatbot Arena", full:"Chatbot Arena / LMArena", zh:"大模型竞技场", cat:"评估安全",
+   desc:"让用户盲测两个模型的回答并投票，用排位赛（Elo）方式给全球大模型排名的知名平台。",
+   video:"https://www.youtube.com/results?search_query=chatbot+arena+LMSYS", wiki:"https://en.wikipedia.org/wiki/Chatbot_Arena"},
+  {abbr:"Watermarking", full:"Watermarking", zh:"数字水印", cat:"评估安全",
+   desc:"在 AI 生成的文本/图片里嵌入人眼难察、但可被算法检测的标记，用于溯源和鉴别 AI 内容。",
+   video:"https://www.youtube.com/results?search_query=AI+watermarking", wiki:"https://en.wikipedia.org/wiki/Digital_watermarking"},
+
+  /* —— 生成 / 多模态 —— */
+  {abbr:"VAE", full:"Variational Autoencoder", zh:"变分自编码器", cat:"生成",
+   desc:"一种生成模型，把数据压成潜空间分布再采样还原，是 Stable Diffusion 等系统的重要组件。",
+   video:"https://www.youtube.com/results?search_query=variational+autoencoder", wiki:"https://en.wikipedia.org/wiki/Variational_autoencoder"},
+  {abbr:"CLIP", full:"Contrastive Language-Image Pre-training", zh:"图文对比预训练模型", cat:"生成",
+   desc:"OpenAI 提出的模型，把图片和文字映射到同一空间、让“图”和“描述它的文字”靠近，是文生图和多模态的基石。",
+   video:"https://www.youtube.com/results?search_query=CLIP+openai+model", wiki:"https://en.wikipedia.org/wiki/Contrastive_Language-Image_Pre-training"},
+  {abbr:"Stable Diffusion", full:"Stable Diffusion", zh:"开源文生图模型", cat:"生成",
+   desc:"Stability AI 推出的开源扩散模型，能在个人显卡上根据文字生成图像，催生了庞大的 AI 绘画生态。",
+   video:"https://www.youtube.com/results?search_query=stable+diffusion", wiki:"https://en.wikipedia.org/wiki/Stable_Diffusion"},
+  {abbr:"DALL·E", full:"DALL·E", zh:"OpenAI 文生图模型", cat:"生成",
+   desc:"OpenAI 的文生图模型，名字是画家达利（Dalí）+ 机器人瓦力（WALL·E）的合成。",
+   video:"https://www.youtube.com/results?search_query=dall+e+openai", wiki:"https://en.wikipedia.org/wiki/DALL-E"},
+  {abbr:"Sora", full:"Sora", zh:"OpenAI 文生视频模型", cat:"生成",
+   desc:"OpenAI 的文生视频模型，能根据文字生成逼真连贯的视频片段，名字取自日语“天空（そら）”。",
+   video:"https://www.youtube.com/results?search_query=openai+sora+video", wiki:"https://en.wikipedia.org/wiki/Sora_(text-to-video_model)"},
+  {abbr:"Text-to-Image", full:"Text-to-Image", zh:"文生图", cat:"生成",
+   desc:"输入一句话、生成对应图片的技术总称，代表产品有 Midjourney、Stable Diffusion、DALL·E。",
+   video:"https://www.youtube.com/results?search_query=text+to+image+AI", wiki:"https://en.wikipedia.org/wiki/Text-to-image_model"},
+  {abbr:"Text-to-Video", full:"Text-to-Video", zh:"文生视频", cat:"生成",
+   desc:"用文字描述生成视频的技术，代表有 Sora、Runway、可灵等，是 2024 年以来的爆发方向。",
+   video:"https://www.youtube.com/results?search_query=text+to+video+AI", wiki:"https://en.wikipedia.org/wiki/Text-to-video_model"},
+  {abbr:"TTS", full:"Text-to-Speech", zh:"语音合成", cat:"生成",
+   desc:"把文字转成自然语音的技术，如今 AI 配音已能做到几可乱真、带情感。",
+   video:"https://www.youtube.com/results?search_query=text+to+speech+AI", wiki:"https://en.wikipedia.org/wiki/Speech_synthesis"},
+  {abbr:"ASR", full:"Automatic Speech Recognition", zh:"语音识别", cat:"生成",
+   desc:"把语音转成文字的技术（语音转文字），是语音输入、字幕、会议记录的基础。代表模型 Whisper。",
+   video:"https://www.youtube.com/results?search_query=speech+recognition+ASR", wiki:"https://en.wikipedia.org/wiki/Speech_recognition"},
+  {abbr:"Whisper", full:"Whisper", zh:"OpenAI 语音识别模型", cat:"生成",
+   desc:"OpenAI 开源的语音识别模型，支持多语种转写和翻译，识别准、又免费，应用极广。",
+   video:"https://www.youtube.com/results?search_query=openai+whisper", wiki:"https://en.wikipedia.org/wiki/Whisper_(speech_recognition_system)"},
+  {abbr:"VLM", full:"Vision-Language Model", zh:"视觉语言模型", cat:"生成",
+   desc:"能同时理解图像和文字的模型（看图回答问题、描述图片），是多模态大模型的核心形态。",
+   video:"https://www.youtube.com/results?search_query=vision+language+model", wiki:"https://en.wikipedia.org/wiki/Multimodal_learning"},
+  {abbr:"ControlNet", full:"ControlNet", zh:"图像生成控制", cat:"生成",
+   desc:"给文生图加“精确控制”的技术，可用线稿、姿态、深度图等约束生成结果，让 AI 绘画更可控。",
+   video:"https://www.youtube.com/results?search_query=controlnet+stable+diffusion", wiki:"https://en.wikipedia.org/wiki/Stable_Diffusion"},
+  {abbr:"Deepfake", full:"Deepfake", zh:"深度伪造", cat:"生成",
+   desc:"用 AI 换脸/拟声伪造出以假乱真的视频或音频，名字是 deep learning + fake，带来不少安全与伦理争议。",
+   video:"https://www.youtube.com/results?search_query=deepfake+explained", wiki:"https://en.wikipedia.org/wiki/Deepfake"},
+  {abbr:"Gaussian Splatting", full:"3D Gaussian Splatting", zh:"高斯泼溅", cat:"生成",
+   desc:"用大量带颜色的“高斯点”表示三维场景，能实时渲染照片级 3D，是近年三维重建的突破方向。",
+   video:"https://www.youtube.com/results?search_query=gaussian+splatting", wiki:"https://en.wikipedia.org/wiki/Gaussian_splatting"},
+
+  /* —— 硬件 / 算力（补充）—— */
+  {abbr:"CUDA", full:"Compute Unified Device Architecture", zh:"英伟达并行计算平台", cat:"硬件算力",
+   desc:"英伟达的 GPU 编程平台和生态。正是 CUDA 多年积累的软件壁垒，让英伟达在 AI 算力上难被替代。",
+   video:"https://www.youtube.com/results?search_query=CUDA+nvidia+explained", wiki:"https://zh.wikipedia.org/wiki/CUDA"},
+  {abbr:"Tensor Core", full:"Tensor Core", zh:"张量核心", cat:"硬件算力",
+   desc:"英伟达 GPU 里专为矩阵乘法（AI 计算的核心运算）设计的单元，极大加速训练和推理。",
+   video:"https://www.youtube.com/results?search_query=tensor+core+nvidia", wiki:"https://en.wikipedia.org/wiki/Tensor_Processing_Unit"},
+  {abbr:"NVLink", full:"NVLink", zh:"英伟达高速互联", cat:"硬件算力",
+   desc:"英伟达的 GPU 间高速互联技术，让多张卡像一张大卡一样高速交换数据，是组建 AI 集群的关键。",
+   video:"https://www.youtube.com/results?search_query=NVLink+nvidia", wiki:"https://en.wikipedia.org/wiki/NVLink"},
+  {abbr:"InfiniBand", full:"InfiniBand", zh:"高速网络互联", cat:"硬件算力",
+   desc:"数据中心里服务器之间的超高速、低延迟网络，是大规模分布式训练的主流互联方案。",
+   video:"https://www.youtube.com/results?search_query=infiniband+AI+cluster", wiki:"https://en.wikipedia.org/wiki/InfiniBand"},
+  {abbr:"Data Center", full:"Data Center", zh:"数据中心", cat:"硬件算力",
+   desc:"集中部署成千上万台服务器/GPU 的机房，是训练和运行大模型的“算力工厂”，对电力和散热要求极高。",
+   video:"https://www.youtube.com/results?search_query=AI+data+center", wiki:"https://en.wikipedia.org/wiki/Data_center"},
+  {abbr:"MFU", full:"Model FLOPs Utilization", zh:"算力利用率", cat:"硬件算力",
+   desc:"实际用到的算力占硬件理论峰值的比例。训练大模型时 MFU 越高，说明 GPU 越没被“闲置浪费”。",
+   video:"https://www.youtube.com/results?search_query=model+flops+utilization+MFU", wiki:"https://en.wikipedia.org/wiki/FLOPS"},
+  {abbr:"Liquid Cooling", full:"Liquid Cooling", zh:"液冷", cat:"硬件算力",
+   desc:"用液体而非风扇给芯片散热。AI 芯片功耗暴涨后，液冷成为高密度数据中心的必备方案。",
+   video:"https://www.youtube.com/results?search_query=liquid+cooling+data+center+AI", wiki:"https://en.wikipedia.org/wiki/Liquid_cooling"},
+  {abbr:"EUV", full:"Extreme Ultraviolet Lithography", zh:"极紫外光刻", cat:"硬件算力",
+   desc:"用极短波长的紫外光在芯片上“刻”出极细电路，是制造 7nm 以下先进芯片的必备技术，设备由 ASML 垄断。",
+   video:"https://www.youtube.com/results?search_query=EUV+lithography", wiki:"https://zh.wikipedia.org/wiki/极紫外光刻"},
+  {abbr:"Wafer", full:"Wafer", zh:"晶圆", cat:"硬件算力",
+   desc:"制造芯片用的圆形硅片，一片晶圆上能切出许多颗芯片。良率指其中合格芯片的比例。",
+   video:"https://www.youtube.com/results?search_query=semiconductor+wafer", wiki:"https://zh.wikipedia.org/wiki/晶圆"},
+  {abbr:"Foundry / Fabless", full:"Foundry / Fabless", zh:"代工厂 / 无晶圆厂", cat:"硬件算力",
+   desc:"代工厂（如台积电）专门替别人造芯片；无晶圆厂公司（如英伟达、苹果）只设计、不自建工厂。这种分工是现代芯片业的基础。",
+   video:"https://www.youtube.com/results?search_query=foundry+fabless+semiconductor", wiki:"https://en.wikipedia.org/wiki/Foundry_model"},
+  {abbr:"SRAM", full:"Static Random Access Memory", zh:"静态随机存取存储器", cat:"硬件算力",
+   desc:"速度极快但昂贵、容量小的内存，常用作 CPU/GPU 内部的高速缓存（Cache）。与 DRAM 互补。",
+   video:"https://www.youtube.com/results?search_query=SRAM+vs+DRAM", wiki:"https://en.wikipedia.org/wiki/Static_random-access_memory"},
+  {abbr:"Bandwidth", full:"Memory Bandwidth", zh:"带宽", cat:"硬件算力",
+   desc:"单位时间能搬运多少数据。大模型推理常被“内存带宽”而非算力卡住，所以 HBM 才这么关键。",
+   video:"https://www.youtube.com/results?search_query=memory+bandwidth+GPU+AI", wiki:"https://en.wikipedia.org/wiki/Memory_bandwidth"},
+  {abbr:"ASIC", full:"Application-Specific Integrated Circuit", zh:"专用集成电路", cat:"硬件算力",
+   desc:"为单一用途定制的芯片，效率远超通用芯片。谷歌 TPU、各种 AI 推理芯片都是 ASIC。",
+   video:"https://www.youtube.com/results?search_query=ASIC+chip+AI", wiki:"https://en.wikipedia.org/wiki/Application-specific_integrated_circuit"},
+  {abbr:"Moore's Law", full:"Moore's Law", zh:"摩尔定律", cat:"硬件算力",
+   desc:"经验规律：芯片上的晶体管数约每两年翻一番。近年放缓，业界转向先进封装、Chiplet 等新路径延续算力增长。",
+   video:"https://www.youtube.com/results?search_query=moore's+law", wiki:"https://zh.wikipedia.org/wiki/摩尔定律"},
+  {abbr:"Blackwell / Hopper", full:"Blackwell / Hopper", zh:"英伟达 GPU 架构", cat:"硬件算力",
+   desc:"英伟达 GPU 的架构代号，常以科学家命名。Hopper 对应 H100，Blackwell 对应更新的 B200/GB200，是 AI 算力的旗舰。",
+   video:"https://www.youtube.com/results?search_query=nvidia+blackwell+hopper+GPU", wiki:"https://en.wikipedia.org/wiki/Blackwell_(microarchitecture)"},
+
+  /* —— 前沿 / 概念 —— */
+  {abbr:"AGI", full:"Artificial General Intelligence", zh:"通用人工智能", cat:"前沿",
+   desc:"在几乎所有智力任务上达到或超过人类水平的 AI，是 OpenAI、DeepMind 等公司公开追求的终极目标。",
+   video:"https://www.youtube.com/results?search_query=AGI+artificial+general+intelligence", wiki:"https://zh.wikipedia.org/wiki/通用人工智能"},
+  {abbr:"ASI", full:"Artificial Superintelligence", zh:"超级人工智能", cat:"前沿",
+   desc:"在所有领域全面远超人类智慧的假想 AI，被认为存在巨大机遇与风险，是“超级对齐”要应对的对象。",
+   video:"https://www.youtube.com/results?search_query=artificial+superintelligence", wiki:"https://en.wikipedia.org/wiki/Superintelligence"},
+  {abbr:"Emergent Abilities", full:"Emergent Abilities", zh:"涌现能力", cat:"前沿",
+   desc:"模型规模超过某个临界点后，突然“冒出”小模型完全不具备的新能力（如多步推理）。是大模型最神奇的特性之一。",
+   video:"https://www.youtube.com/results?search_query=emergent+abilities+LLM", wiki:"https://en.wikipedia.org/wiki/Large_language_model"},
+  {abbr:"Reasoning Model", full:"Reasoning Model", zh:"推理模型", cat:"前沿",
+   desc:"专门强化“深度思考”的模型（如 OpenAI o 系列、DeepSeek-R1），回答前会先长时间推演，擅长数学、编程等硬核任务。",
+   video:"https://www.youtube.com/results?search_query=reasoning+model+o1+deepseek", wiki:"https://en.wikipedia.org/wiki/Large_language_model"},
+  {abbr:"Test-time Compute", full:"Test-time Compute", zh:"测试时计算", cat:"前沿",
+   desc:"让模型在“回答时”多花算力深思（而非只在训练时堆资源），用更长的思考换更高的准确率。推理模型背后的关键思路。",
+   video:"https://www.youtube.com/results?search_query=test+time+compute+scaling", wiki:"https://en.wikipedia.org/wiki/Large_language_model"},
+  {abbr:"Long Context", full:"Long Context", zh:"长上下文", cat:"前沿",
+   desc:"模型一次能处理超长输入（几十万甚至上百万 token）的能力，可一口气读整本书或整个代码库。",
+   video:"https://www.youtube.com/results?search_query=long+context+window+LLM", wiki:"https://en.wikipedia.org/wiki/Large_language_model"},
+  {abbr:"Interpretability", full:"Interpretability", zh:"可解释性", cat:"前沿",
+   desc:"研究“模型内部到底在想什么、为什么这么答”的领域。大模型常被称为“黑盒”，打开它正是该方向的目标。",
+   video:"https://www.youtube.com/results?search_query=AI+interpretability+mechanistic", wiki:"https://en.wikipedia.org/wiki/Explainable_artificial_intelligence"},
+  {abbr:"White-box", full:"White-box Research", zh:"白盒研究", cat:"前沿",
+   desc:"与“黑盒”相对，试图从原理上看懂神经网络每一步在干什么、让模型可理解可推导。是可解释性的重要流派。",
+   video:"https://www.youtube.com/@TheValley101/search?query=白盒+大模型", wiki:"https://en.wikipedia.org/wiki/Explainable_artificial_intelligence"},
+  {abbr:"Superalignment", full:"Superalignment", zh:"超级对齐", cat:"前沿",
+   desc:"研究如何让远超人类智能的 AI 仍可控、可监督、与人类价值一致的前沿方向。",
+   video:"https://www.youtube.com/results?search_query=superalignment+openai", wiki:"https://en.wikipedia.org/wiki/AI_alignment"},
+
+  /* —— 公司 / 产品（补充）—— */
+  {abbr:"Microsoft", full:"Microsoft / Azure", zh:"OpenAI 最大金主与云伙伴", cat:"公司机构",
+   desc:"微软是 OpenAI 的主要投资方和独家云服务商；旗下 Azure AI、Copilot 把 AI 嵌入 Office、Windows 等全线产品。",
+   video:"https://www.youtube.com/results?search_query=microsoft+copilot+azure+AI", wiki:"https://en.wikipedia.org/wiki/Microsoft_Copilot"},
+  {abbr:"Google DeepMind", full:"Google DeepMind", zh:"谷歌 AI 部门", cat:"公司机构",
+   desc:"谷歌的 AI 研究核心，由 DeepMind（AlphaGo 团队）与 Google Brain 合并而来，主导 Gemini 模型与 TPU。",
+   video:"https://www.youtube.com/results?search_query=google+deepmind", wiki:"https://en.wikipedia.org/wiki/Google_DeepMind"},
+  {abbr:"Meta AI", full:"Meta AI / FAIR", zh:"脸书母公司的 AI 部门", cat:"公司机构",
+   desc:"Meta（Facebook、Instagram 母公司）的 AI 团队，主推开源路线，代表作是 Llama 系列模型。",
+   video:"https://www.youtube.com/results?search_query=meta+AI+llama", wiki:"https://en.wikipedia.org/wiki/Meta_AI"},
+  {abbr:"xAI", full:"xAI", zh:"马斯克的 AI 公司", cat:"公司机构",
+   desc:"马斯克 2023 年创立的 AI 公司，产品是 Grok，并自建超大 GPU 集群“Colossus”，与 X（推特）深度结合。",
+   video:"https://www.youtube.com/results?search_query=xAI+grok+musk", wiki:"https://en.wikipedia.org/wiki/XAI_(company)"},
+  {abbr:"AMD", full:"AMD (Instinct MI series)", zh:"英伟达的主要 GPU 对手", cat:"公司机构",
+   desc:"芯片公司，其 Instinct MI 系列 AI 加速卡是英伟达在数据中心 GPU 上的主要挑战者；软件生态 ROCm 对标 CUDA。",
+   video:"https://www.youtube.com/results?search_query=AMD+instinct+MI300+AI", wiki:"https://en.wikipedia.org/wiki/AMD_Instinct"},
+  {abbr:"Groq / Cerebras", full:"Groq / Cerebras", zh:"AI 推理芯片新势力", cat:"公司机构",
+   desc:"两家自研 AI 芯片公司：Groq 主打超低延迟推理（LPU），Cerebras 造出“晶圆级”巨型芯片，都在挑战英伟达的格局。",
+   video:"https://www.youtube.com/results?search_query=groq+cerebras+AI+chip", wiki:"https://en.wikipedia.org/wiki/Cerebras"},
+  {abbr:"CoreWeave", full:"CoreWeave", zh:"GPU 云算力租赁商", cat:"公司机构",
+   desc:"专门出租英伟达 GPU 算力的云服务商（“新型云”），趁 AI 热潮迅速崛起。同类还有 Lambda、Together AI。",
+   video:"https://www.youtube.com/results?search_query=coreweave+GPU+cloud", wiki:"https://en.wikipedia.org/wiki/CoreWeave"},
+  {abbr:"Perplexity", full:"Perplexity AI", zh:"AI 答案搜索引擎", cat:"公司机构",
+   desc:"把搜索和大模型结合的“答案引擎”，直接给出带引用来源的回答，被视为对传统搜索引擎的挑战者。",
+   video:"https://www.youtube.com/results?search_query=perplexity+AI+search", wiki:"https://en.wikipedia.org/wiki/Perplexity_AI"},
+  {abbr:"Runway", full:"Runway", zh:"AI 视频生成公司", cat:"公司机构",
+   desc:"AI 创意工具公司，以文生视频/视频编辑著称，是影视和广告行业 AI 化的代表玩家。",
+   video:"https://www.youtube.com/results?search_query=runway+AI+video", wiki:"https://en.wikipedia.org/wiki/Runway_(company)"},
+  {abbr:"Stability AI", full:"Stability AI", zh:"Stable Diffusion 母公司", cat:"公司机构",
+   desc:"开源生成式 AI 公司，因推出开源文生图模型 Stable Diffusion 而闻名。",
+   video:"https://www.youtube.com/results?search_query=stability+AI", wiki:"https://en.wikipedia.org/wiki/Stability_AI"},
+  {abbr:"Scale AI", full:"Scale AI", zh:"数据标注巨头", cat:"公司机构",
+   desc:"为 AI 公司提供高质量数据标注与评测服务的公司，是大模型训练数据供应链的关键一环。",
+   video:"https://www.youtube.com/results?search_query=scale+AI+data+labeling", wiki:"https://en.wikipedia.org/wiki/Scale_AI"},
+  {abbr:"Cohere", full:"Cohere", zh:"企业级大模型公司", cat:"公司机构",
+   desc:"专注为企业提供大模型和检索（RAG）能力的公司，主打安全可控的 to-B 场景。",
+   video:"https://www.youtube.com/results?search_query=cohere+AI", wiki:"https://en.wikipedia.org/wiki/Cohere"},
+  {abbr:"GitHub Copilot", full:"GitHub Copilot", zh:"AI 编程助手鼻祖", cat:"模型产品",
+   desc:"GitHub（微软旗下）与 OpenAI 合作推出的 AI 编程助手，在编辑器里自动补全和生成代码，开启了 AI 编程浪潮。",
+   video:"https://www.youtube.com/results?search_query=github+copilot", wiki:"https://en.wikipedia.org/wiki/GitHub_Copilot"},
+  {abbr:"Devin", full:"Devin (by Cognition)", zh:"AI 软件工程师", cat:"模型产品",
+   desc:"被称为“首个 AI 软件工程师”的自主编程 agent，能独立接需求、写代码、调试、交付，引发对编程岗位的广泛讨论。",
+   video:"https://www.youtube.com/results?search_query=devin+AI+software+engineer", wiki:"https://en.wikipedia.org/wiki/Devin_AI"},
+  {abbr:"Codex", full:"OpenAI Codex", zh:"OpenAI 编程模型/agent", cat:"模型产品",
+   desc:"OpenAI 的代码模型与编程 agent 产品线，能理解需求并自动写代码、跑测试，对标 Claude Code。",
+   video:"https://www.youtube.com/results?search_query=openai+codex", wiki:"https://en.wikipedia.org/wiki/OpenAI_Codex"},
+
+  /* ===== Claude 各档位名字详解（由小到大的文学阶梯）===== */
+  {abbr:"Haiku", full:"Claude Haiku", zh:"Claude 最快档", cat:"模型产品",
+   desc:"“俳句”是日本最短的诗（5-7-5 共 17 个音），以极简凝练著称。Anthropic 用它命名速度最快、最省钱、最轻量的入门档——就像俳句用最少的字传达意境。",
+   video:"https://www.youtube.com/results?search_query=claude+haiku+model", wiki:"https://en.wikipedia.org/wiki/Claude_(language_model)"},
+  {abbr:"Sonnet", full:"Claude Sonnet", zh:"Claude 均衡档", cat:"模型产品",
+   desc:"“十四行诗（Sonnet）”是西方一种格律严谨却又优美的诗体（莎士比亚最为著名）。象征“结构与创意兼顾”——是速度与能力平衡的中端主力档，日常使用最常见。",
+   video:"https://www.youtube.com/results?search_query=claude+sonnet+model", wiki:"https://en.wikipedia.org/wiki/Claude_(language_model)"},
+  {abbr:"Opus", full:"Claude Opus", zh:"Claude 旗舰档", cat:"模型产品",
+   desc:"“Opus”是拉丁语“作品”，古典音乐里用“作品号”（Op.，如贝多芬 Op.27）标记作曲家最重要、最宏大的乐章。Anthropic 用它命名能力最强、最“厚重”的旗舰档，处理最复杂的任务。",
+   video:"https://www.youtube.com/results?search_query=claude+opus+model", wiki:"https://en.wikipedia.org/wiki/Claude_(language_model)"},
+  {abbr:"Mythos", full:"Claude Mythos", zh:"Claude 顶级保留档", cat:"模型产品",
+   desc:"“Mythos”源自希腊语，意为“神话/宏大叙事”，体量比 Opus 更高一级。是 Anthropic 在 2026 年仅向少数企业开放的顶级档位，延续“体裁越宏大、能力越强”的命名逻辑。",
+   video:"https://www.youtube.com/results?search_query=claude+mythos+anthropic", wiki:"https://en.wikipedia.org/wiki/Claude_(language_model)"},
+  {abbr:"Fable", full:"Claude Fable", zh:"Claude 公开最强档", cat:"模型产品",
+   desc:"“Fable”即“寓言”（如《伊索寓言》那种含哲理的故事）。Claude Fable 5 于 2026 年 6 月 9 日发布，是 Mythos 级里公开可用、当时几乎在所有测试基准上都最强的旗舰模型。命名脉络：俳句→十四行诗→作品→神话→寓言，体裁越“大”，模型越强。",
+   video:"https://www.youtube.com/results?search_query=claude+fable+5+anthropic", wiki:"https://en.wikipedia.org/wiki/Claude_(language_model)"},
+
+  /* ===== 中国 AI 公司 / 机构 ===== */
+  {abbr:"字节跳动", full:"ByteDance", zh:"豆包 / 即梦母公司", cat:"公司机构",
+   desc:"抖音、TikTok 的母公司，是国内 AI 投入最猛的巨头之一。AI 产品包括豆包（助手）、即梦（图/视频生成），云与模型平台为“火山引擎”。豆包月活已达数亿，是中国用户最多的 AI 应用。",
+   video:"https://www.youtube.com/results?search_query=字节跳动+豆包+AI", wiki:"https://baike.baidu.com/item/字节跳动"},
+  {abbr:"百度", full:"Baidu", zh:"文心一言母公司", cat:"公司机构",
+   desc:"中国最早“All in AI”的科技巨头，搜索起家。代表作是文心大模型（ERNIE）与文心一言，是国内最早对标 ChatGPT 的产品；还有“萝卜快跑”自动驾驶。",
+   video:"https://www.youtube.com/results?search_query=百度+文心一言", wiki:"https://baike.baidu.com/item/百度"},
+  {abbr:"阿里巴巴", full:"Alibaba", zh:"通义千问母公司", cat:"公司机构",
+   desc:"电商与云计算巨头，旗下通义千问（Qwen）是全球开源影响力最大的中国模型之一；阿里云“百炼”是其大模型开发平台。",
+   video:"https://www.youtube.com/results?search_query=阿里巴巴+通义千问", wiki:"https://baike.baidu.com/item/阿里巴巴集团"},
+  {abbr:"腾讯", full:"Tencent", zh:"混元 / 元宝母公司", cat:"公司机构",
+   desc:"微信、QQ 的母公司。自研“混元”大模型，AI 助手“元宝”依托微信生态快速增长，把 AI 带进了国民级社交场景。",
+   video:"https://www.youtube.com/results?search_query=腾讯+混元+元宝", wiki:"https://baike.baidu.com/item/腾讯"},
+  {abbr:"快手", full:"Kuaishou", zh:"可灵视频生成母公司", cat:"公司机构",
+   desc:"短视频平台，其视频生成模型“可灵（Kling）”在全球领先并率先大规模商业化，单月付费一度过亿元，是国产 AI 视频的标杆。",
+   video:"https://www.youtube.com/results?search_query=快手+可灵+视频", wiki:"https://baike.baidu.com/item/快手"},
+  {abbr:"华为", full:"Huawei", zh:"昇腾算力 + 盘古大模型", cat:"公司机构",
+   desc:"国产算力的代表。自研“昇腾（Ascend）”AI 芯片对标英伟达 GPU，并推出偏行业/产业落地的“盘古”大模型，是中国 AI 自主供应链的核心。",
+   video:"https://www.youtube.com/results?search_query=华为+昇腾+盘古", wiki:"https://baike.baidu.com/item/华为"},
+  {abbr:"月之暗面", full:"Moonshot AI", zh:"Kimi 背后的公司", cat:"公司机构",
+   desc:"AI 创业公司，产品是 Kimi，以“超长上下文”起家（能一次读很长的文档）。是国内“大模型六小龙”之一。名字呼应 Pink Floyd 名专辑《月之暗面》。",
+   video:"https://www.youtube.com/results?search_query=月之暗面+Kimi", wiki:"https://baike.baidu.com/item/月之暗面"},
+  {abbr:"智谱", full:"Zhipu AI / 智谱华章", zh:"GLM 模型背后的公司", cat:"公司机构",
+   desc:"清华大学技术背景的 AI 公司，代表作是 GLM / ChatGLM 系列模型和“智谱清言”。是“大模型六小龙”之一，积极推进上市。",
+   video:"https://www.youtube.com/results?search_query=智谱+GLM+清华", wiki:"https://baike.baidu.com/item/智谱华章"},
+  {abbr:"MiniMax", full:"MiniMax / 稀宇科技", zh:"海螺 / Talkie 母公司", cat:"公司机构",
+   desc:"AI 创业公司，旗下有 AI 助手“海螺（Hailuo）”、AI 陪伴产品“星野/Talkie”，在语音和视频生成上很强。“大模型六小龙”之一。",
+   video:"https://www.youtube.com/results?search_query=MiniMax+海螺", wiki:"https://baike.baidu.com/item/MiniMax"},
+  {abbr:"阶跃星辰", full:"StepFun", zh:"Step 系列模型公司", cat:"公司机构",
+   desc:"AI 创业公司，以多模态见长，推出 Step 系列模型。是“大模型六小龙”之一。",
+   video:"https://www.youtube.com/results?search_query=阶跃星辰+StepFun", wiki:"https://baike.baidu.com/item/阶跃星辰"},
+  {abbr:"百川智能", full:"Baichuan AI", zh:"王小川创立的大模型公司", cat:"公司机构",
+   desc:"由搜狗创始人王小川创立，推出百川（Baichuan）系列模型，在医疗等垂直领域发力。“大模型六小龙”之一。",
+   video:"https://www.youtube.com/results?search_query=百川智能+王小川", wiki:"https://baike.baidu.com/item/百川智能"},
+  {abbr:"零一万物", full:"01.AI", zh:"李开复创立的大模型公司", cat:"公司机构",
+   desc:"由李开复创立，推出 Yi 系列模型（中英双语能力强）。“大模型六小龙”之一。",
+   video:"https://www.youtube.com/results?search_query=零一万物+李开复+Yi", wiki:"https://baike.baidu.com/item/零一万物"},
+  {abbr:"商汤科技", full:"SenseTime", zh:"日日新大模型公司", cat:"公司机构",
+   desc:"以计算机视觉起家的老牌 AI 公司，推出“日日新（SenseNova）”大模型体系，覆盖文生图、数字人、视频生成等。",
+   video:"https://www.youtube.com/results?search_query=商汤+日日新+SenseNova", wiki:"https://baike.baidu.com/item/商汤科技"},
+  {abbr:"科大讯飞", full:"iFlytek", zh:"讯飞星火母公司", cat:"公司机构",
+   desc:"中国语音 AI 的龙头企业，长期深耕语音识别与合成，推出“讯飞星火”大模型，在语音交互、教育、办公场景应用广泛。",
+   video:"https://www.youtube.com/results?search_query=科大讯飞+星火", wiki:"https://baike.baidu.com/item/科大讯飞"},
+  {abbr:"大模型六小龙", full:"China's Six LLM Tigers", zh:"国产大模型创业六强", cat:"公司机构",
+   desc:"媒体对六家最受瞩目的中国大模型创业公司的统称（也叫“六小虎”）：智谱、月之暗面（Kimi）、MiniMax、阶跃星辰、百川智能、零一万物。它们与字节、阿里、腾讯等大厂同台竞争。",
+   video:"https://www.youtube.com/results?search_query=大模型+六小龙+六小虎", wiki:"https://baike.baidu.com/item/大模型六小虎"},
+
+  /* ===== 中国 AI 产品 / 模型 ===== */
+  {abbr:"豆包", full:"Doubao (by ByteDance)", zh:"中国用户最多的 AI 助手", cat:"模型产品",
+   desc:"字节跳动出品的 AI 助手 App，月活数亿，是中国使用人数最多的 AI 应用之一。能聊天、写作、答题、生成图片，背后是字节自研的豆包/Seed 系列大模型。",
+   video:"https://www.youtube.com/results?search_query=豆包+字节+AI助手", wiki:"https://baike.baidu.com/item/豆包"},
+  {abbr:"即梦", full:"Jimeng AI (by ByteDance)", zh:"字节的 AI 图/视频生成", cat:"模型产品",
+   desc:"字节跳动旗下的 AI 创作工具，主打文生图和文生视频，背后是 Seedance/Seaweed 等视频模型，与快手“可灵”是国产 AI 视频的两大对手。",
+   video:"https://www.youtube.com/results?search_query=即梦+字节+视频生成", wiki:"https://baike.baidu.com/item/即梦"},
+  {abbr:"文心一言", full:"ERNIE Bot (by Baidu)", zh:"百度的对话大模型", cat:"模型产品",
+   desc:"百度推出的对话式 AI 产品，是中国最早对标 ChatGPT 的大模型应用；底层是“文心大模型（ERNIE）”。",
+   video:"https://www.youtube.com/results?search_query=文心一言+百度", wiki:"https://baike.baidu.com/item/文心一言"},
+  {abbr:"混元", full:"Hunyuan (by Tencent)", zh:"腾讯的大模型", cat:"模型产品",
+   desc:"腾讯自研的大模型，涵盖语言、图像、视频、3D 等多模态能力，已接入微信、QQ、腾讯文档等众多产品。",
+   video:"https://www.youtube.com/results?search_query=腾讯混元+大模型", wiki:"https://baike.baidu.com/item/腾讯混元大模型"},
+  {abbr:"元宝", full:"Tencent Yuanbao", zh:"腾讯的 AI 助手 App", cat:"模型产品",
+   desc:"腾讯的 AI 助手应用，同时接入自家“混元”和 DeepSeek 等模型，借助微信生态快速普及，是国民级 AI 入口的竞争者。",
+   video:"https://www.youtube.com/results?search_query=腾讯元宝+AI", wiki:"https://baike.baidu.com/item/腾讯元宝"},
+  {abbr:"可灵", full:"Kling (by Kuaishou)", zh:"国产 AI 视频标杆", cat:"模型产品",
+   desc:"快手的视频生成模型，能根据文字/图片生成电影质感的高清视频，画质和商业化都处于全球第一梯队，是国产 AI 视频的代表作。",
+   video:"https://www.youtube.com/results?search_query=可灵+kling+AI视频", wiki:"https://baike.baidu.com/item/可灵"},
+  {abbr:"Kimi", full:"Kimi (by Moonshot AI)", zh:"主打长文本的 AI 助手", cat:"模型产品",
+   desc:"月之暗面出品的 AI 助手，以“超长上下文”闻名——能一次性读完很长的文档、网页甚至整本书并作答，深受学生和职场人欢迎。",
+   video:"https://www.youtube.com/results?search_query=Kimi+月之暗面", wiki:"https://baike.baidu.com/item/Kimi"},
+  {abbr:"GLM / ChatGLM", full:"GLM (by Zhipu AI)", zh:"智谱的模型 / 智谱清言", cat:"模型产品",
+   desc:"智谱 AI 的大模型系列（GLM、ChatGLM），消费端产品叫“智谱清言”。开源版本在国内外社区影响力很大。",
+   video:"https://www.youtube.com/results?search_query=智谱+GLM+ChatGLM", wiki:"https://baike.baidu.com/item/ChatGLM"},
+  {abbr:"海螺", full:"Hailuo (by MiniMax)", zh:"MiniMax 的 AI 助手", cat:"模型产品",
+   desc:"MiniMax 推出的 AI 助手与创作工具，在 AI 语音、音乐和视频生成上表现突出。",
+   video:"https://www.youtube.com/results?search_query=海螺+MiniMax+AI", wiki:"https://baike.baidu.com/item/海螺AI"},
+  {abbr:"讯飞星火", full:"iFlytek Spark", zh:"科大讯飞的大模型", cat:"模型产品",
+   desc:"科大讯飞的大模型，依托其深厚的语音技术，在语音交互、教育、办公和方言识别上有独特优势。",
+   video:"https://www.youtube.com/results?search_query=讯飞星火+科大讯飞", wiki:"https://baike.baidu.com/item/讯飞星火认知大模型"},
+  {abbr:"盘古", full:"Pangu (by Huawei)", zh:"华为的产业大模型", cat:"模型产品",
+   desc:"华为的大模型，定位偏向行业与产业落地（如气象、矿山、电力），强调“解决行业实际问题”，运行在华为昇腾算力上。",
+   video:"https://www.youtube.com/results?search_query=华为盘古大模型", wiki:"https://baike.baidu.com/item/盘古大模型"},
+  {abbr:"Yi", full:"Yi (by 01.AI)", zh:"零一万物的模型", cat:"模型产品",
+   desc:"李开复的零一万物推出的大模型系列，中英双语能力强，开源版本在全球榜单上一度表现亮眼。",
+   video:"https://www.youtube.com/results?search_query=零一万物+Yi+模型", wiki:"https://baike.baidu.com/item/零一万物"},
+
+  /* ===== 平台 / 国际补充 ===== */
+  {abbr:"火山引擎", full:"Volcano Engine", zh:"字节的云与模型平台", cat:"公司机构",
+   desc:"字节跳动的云服务与大模型平台，对外提供豆包模型 API、算力和 AI 开发工具，是国内主流的大模型调用平台之一。",
+   video:"https://www.youtube.com/results?search_query=火山引擎+豆包+API", wiki:"https://baike.baidu.com/item/火山引擎"},
+  {abbr:"阿里云百炼", full:"Alibaba Bailian", zh:"阿里的大模型平台", cat:"公司机构",
+   desc:"阿里云的一站式大模型开发与服务平台，提供通义千问等模型的调用、微调和应用搭建能力。",
+   video:"https://www.youtube.com/results?search_query=阿里云+百炼+通义", wiki:"https://baike.baidu.com/item/阿里云百炼"},
+  {abbr:"Together AI / Replicate", full:"Together AI / Replicate", zh:"开源模型云托管平台", cat:"公司机构",
+   desc:"两家面向开发者的平台：可以一键调用、托管和微调各种开源大模型，按用量付费，省去自建 GPU 的麻烦。",
+   video:"https://www.youtube.com/results?search_query=together+ai+replicate", wiki:"https://en.wikipedia.org/wiki/Together_AI"},
+
+  /* ===== 评测基准（中文）===== */
+  {abbr:"C-Eval / SuperCLUE", full:"C-Eval / SuperCLUE", zh:"中文大模型评测基准", cat:"评估安全",
+   desc:"两个针对中文场景的大模型能力评测榜单：C-Eval 偏学科知识考试，SuperCLUE 偏综合中文能力，常用来比较国产模型的高下。",
+   video:"https://www.youtube.com/results?search_query=C-Eval+SuperCLUE+中文大模型评测", wiki:"https://baike.baidu.com/item/SuperCLUE"}
+];
+
+/* ===== 渲染逻辑 ===== */
+const listEl = document.getElementById('list');
+const qEl = document.getElementById('q');
+const countEl = document.getElementById('count');
+const filtersEl = document.getElementById('filters');
+let activeCat = '全部';
+
+const cats = ['全部', ...Array.from(new Set(DATA.map(d=>d.cat)))];
+filtersEl.innerHTML = cats.map(c=>`<span class="chip${c==='全部'?' active':''}" data-cat="${c}">${c}</span>`).join('');
+filtersEl.addEventListener('click', e=>{
+  if(!e.target.classList.contains('chip')) return;
+  activeCat = e.target.dataset.cat;
+  [...filtersEl.children].forEach(c=>c.classList.toggle('active', c.dataset.cat===activeCat));
+  render();
+});
+
+function esc(s){return s.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+
+/* 提取要朗读的英文：缩写 + 英文全称（去掉中文、括号、斜杠） */
+function sayText(d){
+  const clean = s => s.replace(/\([^)]*\)/g,'').replace(/[一-鿿]/g,'')
+    .replace(/[／/]/g,' ').replace(/\s+/g,' ').trim();
+  const a = /[a-zA-Z]/.test(d.abbr) ? clean(d.abbr) : '';
+  const f = clean(d.full);
+  if(a && f && a.toLowerCase()!==f.toLowerCase()) return a + '. ' + f;
+  return a || f || d.full;
+}
+
+/* 用浏览器内置语音合成朗读英文 */
+let curBtn = null;
+function speak(text, btn){
+  if(!('speechSynthesis' in window)){ alert('当前浏览器不支持朗读功能'); return; }
+  speechSynthesis.cancel();
+  if(curBtn) curBtn.classList.remove('playing');
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = 0.9;
+  const v = speechSynthesis.getVoices().find(v=>/en[-_]US/i.test(v.lang)) ||
+            speechSynthesis.getVoices().find(v=>/^en/i.test(v.lang));
+  if(v) u.voice = v;
+  curBtn = btn; if(btn) btn.classList.add('playing');
+  u.onend = u.onerror = ()=>{ if(btn) btn.classList.remove('playing'); };
+  speechSynthesis.speak(u);
+}
+
+function render(){
+  const q = qEl.value.trim().toLowerCase();
+  const items = DATA.filter(d=>{
+    const matchCat = activeCat==='全部' || d.cat===activeCat;
+    const hay = (d.abbr+' '+d.full+' '+d.zh+' '+d.desc).toLowerCase();
+    return matchCat && (!q || hay.includes(q));
+  });
+  countEl.textContent = `共 ${items.length} 个名词`;
+  if(!items.length){ listEl.innerHTML = '<div class="empty">没有匹配的名词，换个关键词试试 🔍</div>'; return; }
+  listEl.innerHTML = items.map((d,i)=>`
+    <div class="card" data-i="${i}">
+      <div class="head">
+        <div class="main">
+          <div class="abbr">${esc(d.abbr)}<button class="say" data-say="${esc(sayText(d))}" title="点击朗读发音" aria-label="朗读发音">🔊</button></div>
+          <div class="full">${esc(d.full)}</div>
+          <div class="zh">${esc(d.zh)}</div>
+        </div>
+        <span class="cat">${esc(d.cat)}</span>
+        <span class="arrow">▶</span>
+      </div>
+      <div class="body"><div class="body-in">
+        <p class="desc">${esc(d.desc)}</p>
+        <div class="links">
+          <a class="vid" href="${d.video}" target="_blank" rel="noopener">▶ 看视频</a>
+          <a href="${d.wiki}" target="_blank" rel="noopener">📖 查百科</a>
+        </div>
+      </div></div>
+    </div>`).join('');
+  listEl.querySelectorAll('.card').forEach(card=>{
+    card.querySelector('.head').addEventListener('click',()=>card.classList.toggle('open'));
+  });
+  listEl.querySelectorAll('.say').forEach(btn=>{
+    btn.addEventListener('click',e=>{ e.stopPropagation(); speak(btn.dataset.say, btn); });
+  });
+}
+
+qEl.addEventListener('input', render);
+render();
+</script>
+</body>
+</html>
