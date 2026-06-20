@@ -25,6 +25,10 @@
   .search input{width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--line);
     background:var(--card);color:var(--text);font-size:16px;outline:none}
   .search input:focus{border-color:var(--accent)}
+  .groups{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 2px}
+  .grp{padding:9px 18px;border-radius:11px;background:var(--card);border:1px solid var(--line);
+    color:var(--muted);font-size:15px;font-weight:500;cursor:pointer;user-select:none}
+  .grp.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .filters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
   .chip{padding:6px 13px;border-radius:20px;background:var(--tag);color:var(--muted);
     font-size:13px;cursor:pointer;border:1px solid transparent;user-select:none}
@@ -70,6 +74,7 @@
 
   <div class="search">
     <input id="q" type="text" placeholder="搜索名词、英文或中文…（例如 RAG、注意力、微调）" autocomplete="off">
+    <div class="groups" id="groups"></div>
     <div class="filters" id="filters"></div>
   </div>
   <div class="count" id="count"></div>
@@ -982,121 +987,121 @@ const DATA = [
    video:"https://www.youtube.com/results?search_query=C-Eval+SuperCLUE+中文大模型评测", wiki:"https://baike.baidu.com/item/SuperCLUE"},
 
   /* ===== 世界 500 强公司：名字由来 + 全称 + 主营 ===== */
-  {abbr:"Walmart 沃尔玛", full:"Walmart Inc.", zh:"全球最大零售商", cat:"世界500强", country:"美国", hq:"阿肯色州本顿维尔", founder:"山姆·沃尔顿（Sam Walton）",
+  {abbr:"Walmart 沃尔玛", full:"Walmart Inc.", zh:"全球最大零售商", cat:"消费零售", country:"美国", hq:"阿肯色州本顿维尔", founder:"山姆·沃尔顿（Sam Walton）",
    desc:"名字 = 创始人 Sam Walton 的姓 “Wal” + 商场 “mart”。常年位居《财富》世界 500 强榜首。主营：大型连锁超市/零售。",
    video:"https://www.youtube.com/results?search_query=walmart+history", wiki:"https://baike.baidu.com/item/沃尔玛"},
-  {abbr:"Amazon 亚马逊", full:"Amazon.com, Inc.", zh:"电商与云计算巨头", cat:"世界500强", country:"美国", hq:"华盛顿州西雅图", founder:"杰夫·贝索斯（Jeff Bezos）",
+  {abbr:"Amazon 亚马逊", full:"Amazon.com, Inc.", zh:"电商与云计算巨头", cat:"科技互联网", country:"美国", hq:"华盛顿州西雅图", founder:"杰夫·贝索斯（Jeff Bezos）",
    desc:"以世界最大河流“亚马逊河”命名，寓意商品选择像河流一样浩瀚；且以 A 开头便于排在前面。主营：电商、云计算(AWS)、AI。",
    video:"https://www.youtube.com/results?search_query=amazon+name+history", wiki:"https://baike.baidu.com/item/亚马逊公司"},
-  {abbr:"Apple 苹果", full:"Apple Inc.", zh:"消费电子龙头", cat:"世界500强", country:"美国", hq:"加州库比蒂诺", founder:"乔布斯、沃兹尼亚克、韦恩",
+  {abbr:"Apple 苹果", full:"Apple Inc.", zh:"消费电子龙头", cat:"科技互联网", country:"美国", hq:"加州库比蒂诺", founder:"乔布斯、沃兹尼亚克、韦恩",
    desc:"乔布斯取名“苹果”——想要一个亲切、不吓人的名字，又能排在当时游戏公司 Atari 前面。主营：iPhone、Mac、服务等。",
    video:"https://www.youtube.com/results?search_query=apple+company+name+origin", wiki:"https://baike.baidu.com/item/苹果公司"},
-  {abbr:"Google 谷歌", full:"Google LLC (Alphabet)", zh:"搜索与互联网巨头", cat:"世界500强", country:"美国", hq:"加州山景城", founder:"拉里·佩奇、谢尔盖·布林",
+  {abbr:"Google 谷歌", full:"Google LLC (Alphabet)", zh:"搜索与互联网巨头", cat:"科技互联网", country:"美国", hq:"加州山景城", founder:"拉里·佩奇、谢尔盖·布林",
    desc:"名字源自数学词 “googol”（10 的 100 次方）的拼写变体，寓意要整理海量信息。母公司为 Alphabet。主营：搜索、广告、安卓、云、AI。",
    video:"https://www.youtube.com/results?search_query=google+name+googol", wiki:"https://baike.baidu.com/item/谷歌"},
-  {abbr:"Microsoft 微软", full:"Microsoft Corporation", zh:"全球软件巨头", cat:"世界500强", country:"美国", hq:"华盛顿州雷德蒙德", founder:"比尔·盖茨、保罗·艾伦",
+  {abbr:"Microsoft 微软", full:"Microsoft Corporation", zh:"全球软件巨头", cat:"科技互联网", country:"美国", hq:"华盛顿州雷德蒙德", founder:"比尔·盖茨、保罗·艾伦",
    desc:"名字 = “microcomputer（微型计算机）” + “software（软件）”。主营：Windows、Office、Azure 云、AI（投资 OpenAI）。",
    video:"https://www.youtube.com/results?search_query=microsoft+history", wiki:"https://baike.baidu.com/item/微软"},
-  {abbr:"Saudi Aramco 沙特阿美", full:"Saudi Arabian Oil Company", zh:"全球最赚钱的石油公司", cat:"世界500强", country:"沙特阿拉伯", hq:"宰赫兰（Dhahran）", founder:"沙特政府（前身为美沙合资）",
+  {abbr:"Saudi Aramco 沙特阿美", full:"Saudi Arabian Oil Company", zh:"全球最赚钱的石油公司", cat:"能源", country:"沙特阿拉伯", hq:"宰赫兰（Dhahran）", founder:"沙特政府（前身为美沙合资）",
    desc:"Aramco = “Arabian American Oil Company（阿拉伯美国石油公司）”的缩写。沙特国家石油公司，利润常年全球第一。主营：石油开采与炼化。",
    video:"https://www.youtube.com/results?search_query=saudi+aramco", wiki:"https://baike.baidu.com/item/沙特阿美"},
-  {abbr:"ExxonMobil 埃克森美孚", full:"Exxon Mobil Corporation", zh:"美国石油巨头", cat:"世界500强", country:"美国", hq:"德州欧文（Irving）", founder:"源自洛克菲勒的标准石油",
+  {abbr:"ExxonMobil 埃克森美孚", full:"Exxon Mobil Corporation", zh:"美国石油巨头", cat:"能源", country:"美国", hq:"德州欧文（Irving）", founder:"源自洛克菲勒的标准石油",
    desc:"由 Exxon（一个特意造出来、全球无歧义的生造词）与 Mobil（机动/移动）两大石油公司合并而来。主营：石油天然气。",
    video:"https://www.youtube.com/results?search_query=exxonmobil+history", wiki:"https://baike.baidu.com/item/埃克森美孚"},
-  {abbr:"Shell 壳牌", full:"Shell plc", zh:"欧洲石油巨头", cat:"世界500强", country:"英国（原英荷合资）", hq:"英国伦敦", founder:"马库斯·塞缪尔（Marcus Samuel）",
+  {abbr:"Shell 壳牌", full:"Shell plc", zh:"欧洲石油巨头", cat:"能源", country:"英国（原英荷合资）", hq:"英国伦敦", founder:"马库斯·塞缪尔（Marcus Samuel）",
    desc:"创始人家族早年做海贝壳与贝壳工艺品贸易起家，故名“壳牌”，logo 就是一枚扇贝。主营：石油天然气、能源。",
    video:"https://www.youtube.com/results?search_query=shell+oil+history+seashell", wiki:"https://baike.baidu.com/item/壳牌"},
-  {abbr:"BP 英国石油", full:"BP p.l.c. (British Petroleum)", zh:"英国石油巨头", cat:"世界500强", country:"英国", hq:"伦敦", founder:"威廉·诺克斯·达西",
+  {abbr:"BP 英国石油", full:"BP p.l.c. (British Petroleum)", zh:"英国石油巨头", cat:"能源", country:"英国", hq:"伦敦", founder:"威廉·诺克斯·达西",
    desc:"BP = “British Petroleum（英国石油）”。主营：石油天然气开采、炼化、新能源。",
    video:"https://www.youtube.com/results?search_query=BP+british+petroleum", wiki:"https://baike.baidu.com/item/英国石油公司"},
-  {abbr:"Toyota 丰田", full:"Toyota Motor Corporation", zh:"全球销量第一车企", cat:"世界500强", country:"日本", hq:"爱知县丰田市", founder:"丰田喜一郎",
+  {abbr:"Toyota 丰田", full:"Toyota Motor Corporation", zh:"全球销量第一车企", cat:"汽车", country:"日本", hq:"爱知县丰田市", founder:"丰田喜一郎",
    desc:"创始人姓“丰田(Toyoda)”，但公司改用“Toyota”——日文片假名写法刚好 8 笔（吉利数），且发音更清亮。主营：汽车制造。",
    video:"https://www.youtube.com/results?search_query=toyota+name+toyoda", wiki:"https://baike.baidu.com/item/丰田汽车"},
-  {abbr:"Volkswagen 大众", full:"Volkswagen AG", zh:"德国汽车集团", cat:"世界500强", country:"德国", hq:"沃尔夫斯堡", founder:"费迪南德·保时捷设计、德国政府创立",
+  {abbr:"Volkswagen 大众", full:"Volkswagen AG", zh:"德国汽车集团", cat:"汽车", country:"德国", hq:"沃尔夫斯堡", founder:"费迪南德·保时捷设计、德国政府创立",
    desc:"德语意为“人民的汽车（people's car）”，源自要造平民买得起的车。旗下有奥迪、保时捷等。主营：汽车制造。",
    video:"https://www.youtube.com/results?search_query=volkswagen+meaning+history", wiki:"https://baike.baidu.com/item/大众汽车"},
-  {abbr:"Mercedes-Benz 奔驰", full:"Mercedes-Benz Group AG", zh:"德国豪华车企", cat:"世界500强", country:"德国", hq:"斯图加特", founder:"卡尔·本茨、戈特利布·戴姆勒",
+  {abbr:"Mercedes-Benz 奔驰", full:"Mercedes-Benz Group AG", zh:"德国豪华车企", cat:"汽车", country:"德国", hq:"斯图加特", founder:"卡尔·本茨、戈特利布·戴姆勒",
    desc:"Mercedes 来自早期经销商爱女的名字，Benz 来自汽车发明者卡尔·本茨(Karl Benz)。主营：豪华汽车制造。",
    video:"https://www.youtube.com/results?search_query=mercedes+benz+name+origin", wiki:"https://baike.baidu.com/item/梅赛德斯-奔驰"},
-  {abbr:"BMW 宝马", full:"Bayerische Motoren Werke AG", zh:"德国豪华车企", cat:"世界500强", country:"德国", hq:"慕尼黑", founder:"卡尔·拉普 等",
+  {abbr:"BMW 宝马", full:"Bayerische Motoren Werke AG", zh:"德国豪华车企", cat:"汽车", country:"德国", hq:"慕尼黑", founder:"卡尔·拉普 等",
    desc:"全称德语“巴伐利亚发动机制造厂”，最早造飞机发动机（蓝白 logo 象征旋转的螺旋桨）。主营：豪华汽车与摩托车。",
    video:"https://www.youtube.com/results?search_query=BMW+full+name+meaning", wiki:"https://baike.baidu.com/item/宝马"},
-  {abbr:"Ford 福特", full:"Ford Motor Company", zh:"美国汽车先驱", cat:"世界500强", country:"美国", hq:"密歇根州迪尔伯恩", founder:"亨利·福特（Henry Ford）",
+  {abbr:"Ford 福特", full:"Ford Motor Company", zh:"美国汽车先驱", cat:"汽车", country:"美国", hq:"密歇根州迪尔伯恩", founder:"亨利·福特（Henry Ford）",
    desc:"以创始人亨利·福特(Henry Ford)命名，他用流水线让汽车走进普通家庭。主营：汽车制造。",
    video:"https://www.youtube.com/results?search_query=ford+henry+ford", wiki:"https://baike.baidu.com/item/福特汽车"},
-  {abbr:"Tesla 特斯拉", full:"Tesla, Inc.", zh:"电动车与新能源龙头", cat:"世界500强", country:"美国", hq:"德州奥斯汀", founder:"艾伯哈德、塔彭宁；马斯克为关键人物",
+  {abbr:"Tesla 特斯拉", full:"Tesla, Inc.", zh:"电动车与新能源龙头", cat:"汽车", country:"美国", hq:"德州奥斯汀", founder:"艾伯哈德、塔彭宁；马斯克为关键人物",
    desc:"为致敬天才发明家尼古拉·特斯拉(Nikola Tesla，交流电先驱)而命名。主营：电动汽车、储能、太阳能、自动驾驶。",
    video:"https://www.youtube.com/results?search_query=tesla+nikola+tesla+name", wiki:"https://baike.baidu.com/item/特斯拉公司"},
-  {abbr:"Sony 索尼", full:"Sony Group Corporation", zh:"日本电子娱乐巨头", cat:"世界500强", country:"日本", hq:"东京", founder:"井深大、盛田昭夫",
+  {abbr:"Sony 索尼", full:"Sony Group Corporation", zh:"日本电子娱乐巨头", cat:"科技互联网", country:"日本", hq:"东京", founder:"井深大、盛田昭夫",
    desc:"名字 = 拉丁语 “sonus（声音）” + 英语俚语 “sonny（小子）”，寓意一群有活力的年轻人做声音科技。主营：电子、游戏(PlayStation)、影音。",
    video:"https://www.youtube.com/results?search_query=sony+name+origin", wiki:"https://baike.baidu.com/item/索尼"},
-  {abbr:"Samsung 三星", full:"Samsung Group", zh:"韩国电子财阀", cat:"世界500强", country:"韩国", hq:"首尔", founder:"李秉喆（Lee Byung-chul）",
+  {abbr:"Samsung 三星", full:"Samsung Group", zh:"韩国电子财阀", cat:"科技互联网", country:"韩国", hq:"首尔", founder:"李秉喆（Lee Byung-chul）",
    desc:"韩语“三星(삼성)”意为“三颗星”，创始人寄望企业像星辰般宏大、众多、永恒。主营：芯片、手机、显示屏、家电等。",
    video:"https://www.youtube.com/results?search_query=samsung+meaning+three+stars", wiki:"https://baike.baidu.com/item/三星集团"},
-  {abbr:"Honda 本田", full:"Honda Motor Co., Ltd.", zh:"日本汽车摩托巨头", cat:"世界500强", country:"日本", hq:"东京", founder:"本田宗一郎",
+  {abbr:"Honda 本田", full:"Honda Motor Co., Ltd.", zh:"日本汽车摩托巨头", cat:"汽车", country:"日本", hq:"东京", founder:"本田宗一郎",
    desc:"以创始人本田宗一郎(Soichiro Honda)命名。主营：汽车、摩托车、发动机。",
    video:"https://www.youtube.com/results?search_query=honda+soichiro", wiki:"https://baike.baidu.com/item/本田"},
-  {abbr:"Nestlé 雀巢", full:"Nestlé S.A.", zh:"全球最大食品公司", cat:"世界500强", country:"瑞士", hq:"沃韦（Vevey）", founder:"亨利·内斯特莱（Henri Nestlé）",
+  {abbr:"Nestlé 雀巢", full:"Nestlé S.A.", zh:"全球最大食品公司", cat:"消费零售", country:"瑞士", hq:"沃韦（Vevey）", founder:"亨利·内斯特莱（Henri Nestlé）",
    desc:"创始人 Henri Nestlé，其姓在德语方言中意为“小鸟巢”，logo 就是鸟巢喂雏。主营：奶粉、咖啡(雀巢/奈斯派索)、食品饮料。",
    video:"https://www.youtube.com/results?search_query=nestle+name+nest", wiki:"https://baike.baidu.com/item/雀巢公司"},
-  {abbr:"Coca-Cola 可口可乐", full:"The Coca-Cola Company", zh:"全球饮料巨头", cat:"世界500强", country:"美国", hq:"佐治亚州亚特兰大", founder:"约翰·彭伯顿（John Pemberton）",
+  {abbr:"Coca-Cola 可口可乐", full:"The Coca-Cola Company", zh:"全球饮料巨头", cat:"消费零售", country:"美国", hq:"佐治亚州亚特兰大", founder:"约翰·彭伯顿（John Pemberton）",
    desc:"名字来自最初两种原料：古柯叶(Coca) + 可乐果(Kola，为押头韵改成 C)。主营：碳酸饮料、瓶装饮品。",
    video:"https://www.youtube.com/results?search_query=coca+cola+name+origin", wiki:"https://baike.baidu.com/item/可口可乐公司"},
-  {abbr:"PepsiCo 百事", full:"PepsiCo, Inc.", zh:"饮料与零食巨头", cat:"世界500强", country:"美国", hq:"纽约州", founder:"凯莱布·布拉德姆",
+  {abbr:"PepsiCo 百事", full:"PepsiCo, Inc.", zh:"饮料与零食巨头", cat:"消费零售", country:"美国", hq:"纽约州", founder:"凯莱布·布拉德姆",
    desc:"Pepsi 源自“消化酶 pepsin / 消化不良 dyspepsia”，最初宣传能助消化。旗下还有乐事、桂格。主营：饮料、休闲食品。",
    video:"https://www.youtube.com/results?search_query=pepsi+name+origin", wiki:"https://baike.baidu.com/item/百事公司"},
-  {abbr:"McDonald's 麦当劳", full:"McDonald's Corporation", zh:"全球最大快餐连锁", cat:"世界500强", country:"美国", hq:"伊利诺伊州芝加哥", founder:"麦当劳兄弟；雷·克罗克发扬",
+  {abbr:"McDonald's 麦当劳", full:"McDonald's Corporation", zh:"全球最大快餐连锁", cat:"消费零售", country:"美国", hq:"伊利诺伊州芝加哥", founder:"麦当劳兄弟；雷·克罗克发扬",
    desc:"以创办餐厅的麦当劳兄弟(McDonald brothers)姓氏命名，后由雷·克罗克做成全球连锁。主营：快餐。",
    video:"https://www.youtube.com/results?search_query=mcdonalds+brothers+history", wiki:"https://baike.baidu.com/item/麦当劳"},
-  {abbr:"Starbucks 星巴克", full:"Starbucks Corporation", zh:"全球最大咖啡连锁", cat:"世界500强", country:"美国", hq:"华盛顿州西雅图", founder:"鲍德温等三人；舒尔茨发扬",
+  {abbr:"Starbucks 星巴克", full:"Starbucks Corporation", zh:"全球最大咖啡连锁", cat:"消费零售", country:"美国", hq:"华盛顿州西雅图", founder:"鲍德温等三人；舒尔茨发扬",
    desc:"名字取自小说《白鲸记》里大副 “Starbuck”，呼应早期航海贩咖啡的意象，logo 是海妖塞壬。主营：咖啡连锁。",
    video:"https://www.youtube.com/results?search_query=starbucks+name+moby+dick", wiki:"https://baike.baidu.com/item/星巴克"},
-  {abbr:"Nike 耐克", full:"Nike, Inc.", zh:"全球最大运动品牌", cat:"世界500强", country:"美国", hq:"俄勒冈州比弗顿", founder:"菲尔·奈特、比尔·鲍尔曼",
+  {abbr:"Nike 耐克", full:"Nike, Inc.", zh:"全球最大运动品牌", cat:"消费零售", country:"美国", hq:"俄勒冈州比弗顿", founder:"菲尔·奈特、比尔·鲍尔曼",
    desc:"以希腊“胜利女神 Nike”命名，logo“钩子”象征女神的翅膀。主营：运动鞋服。",
    video:"https://www.youtube.com/results?search_query=nike+goddess+name", wiki:"https://baike.baidu.com/item/耐克"},
-  {abbr:"Adidas 阿迪达斯", full:"Adidas AG", zh:"德国运动品牌", cat:"世界500强", country:"德国", hq:"黑措根奥拉赫", founder:"阿道夫·达斯勒（Adi Dassler）",
+  {abbr:"Adidas 阿迪达斯", full:"Adidas AG", zh:"德国运动品牌", cat:"消费零售", country:"德国", hq:"黑措根奥拉赫", founder:"阿道夫·达斯勒（Adi Dassler）",
    desc:"名字 = 创始人 Adolf “Adi” Dassler 的昵称 Adi + 姓 Das。（“All Day I Dream About Sports”只是后人编的玩笑）。主营：运动鞋服。",
    video:"https://www.youtube.com/results?search_query=adidas+adi+dassler", wiki:"https://baike.baidu.com/item/阿迪达斯"},
-  {abbr:"Disney 迪士尼", full:"The Walt Disney Company", zh:"全球娱乐传媒巨头", cat:"世界500强", country:"美国", hq:"加州伯班克", founder:"华特·迪士尼、罗伊·迪士尼",
+  {abbr:"Disney 迪士尼", full:"The Walt Disney Company", zh:"全球娱乐传媒巨头", cat:"传媒娱乐", country:"美国", hq:"加州伯班克", founder:"华特·迪士尼、罗伊·迪士尼",
    desc:"以创始人华特·迪士尼(Walt Disney)命名。主营：电影、主题乐园、流媒体、IP(米奇、漫威、星战)。",
    video:"https://www.youtube.com/results?search_query=walt+disney+company+history", wiki:"https://baike.baidu.com/item/华特迪士尼公司"},
-  {abbr:"IBM", full:"International Business Machines", zh:"美国老牌科技公司", cat:"世界500强", country:"美国", hq:"纽约州阿蒙克", founder:"查尔斯·弗林特（老沃森发扬）",
+  {abbr:"IBM", full:"International Business Machines", zh:"美国老牌科技公司", cat:"科技互联网", country:"美国", hq:"纽约州阿蒙克", founder:"查尔斯·弗林特（老沃森发扬）",
    desc:"全称“国际商业机器公司”，绰号“蓝色巨人”。从打孔机、大型机到如今的企业 IT 与 AI(Watson)。主营：企业软硬件与咨询。",
    video:"https://www.youtube.com/results?search_query=IBM+history", wiki:"https://baike.baidu.com/item/IBM"},
-  {abbr:"Intel 英特尔", full:"Intel Corporation", zh:"芯片巨头", cat:"世界500强", country:"美国", hq:"加州圣克拉拉", founder:"罗伯特·诺伊斯、戈登·摩尔",
+  {abbr:"Intel 英特尔", full:"Intel Corporation", zh:"芯片巨头", cat:"科技互联网", country:"美国", hq:"加州圣克拉拉", founder:"罗伯特·诺伊斯、戈登·摩尔",
    desc:"名字 = “Integrated Electronics（集成电子）”的缩写。曾长期垄断电脑 CPU。主营：处理器、芯片制造。",
    video:"https://www.youtube.com/results?search_query=intel+integrated+electronics", wiki:"https://baike.baidu.com/item/英特尔"},
-  {abbr:"Procter & Gamble 宝洁", full:"The Procter & Gamble Company (P&G)", zh:"全球日化巨头", cat:"世界500强", country:"美国", hq:"俄亥俄州辛辛那提", founder:"威廉·宝洁、詹姆斯·甘宝",
+  {abbr:"Procter & Gamble 宝洁", full:"The Procter & Gamble Company (P&G)", zh:"全球日化巨头", cat:"消费零售", country:"美国", hq:"俄亥俄州辛辛那提", founder:"威廉·宝洁、詹姆斯·甘宝",
    desc:"由两位创始人 William Procter（蜡烛商）与 James Gamble（肥皂商）合伙命名。旗下有海飞丝、汰渍、帮宝适等。主营：日用消费品。",
    video:"https://www.youtube.com/results?search_query=procter+gamble+history", wiki:"https://baike.baidu.com/item/宝洁公司"},
-  {abbr:"Johnson & Johnson 强生", full:"Johnson & Johnson", zh:"医疗健康巨头", cat:"世界500强", country:"美国", hq:"新泽西州新不伦瑞克", founder:"约翰逊三兄弟",
+  {abbr:"Johnson & Johnson 强生", full:"Johnson & Johnson", zh:"医疗健康巨头", cat:"医药健康", country:"美国", hq:"新泽西州新不伦瑞克", founder:"约翰逊三兄弟",
    desc:"由约翰逊三兄弟(Johnson brothers)创立。主营：医药、医疗器械、个人护理(创可贴、婴儿用品)。",
    video:"https://www.youtube.com/results?search_query=johnson+and+johnson+history", wiki:"https://baike.baidu.com/item/强生公司"},
-  {abbr:"Pfizer 辉瑞", full:"Pfizer Inc.", zh:"美国制药巨头", cat:"世界500强", country:"美国", hq:"纽约", founder:"查尔斯·辉瑞、查尔斯·厄哈特",
+  {abbr:"Pfizer 辉瑞", full:"Pfizer Inc.", zh:"美国制药巨头", cat:"医药健康", country:"美国", hq:"纽约", founder:"查尔斯·辉瑞、查尔斯·厄哈特",
    desc:"以创始人 Charles Pfizer 姓氏命名。新冠疫苗让它广为人知。主营：处方药、疫苗、生物医药。",
    video:"https://www.youtube.com/results?search_query=pfizer+history", wiki:"https://baike.baidu.com/item/辉瑞公司"},
-  {abbr:"Boeing 波音", full:"The Boeing Company", zh:"美国航空航天巨头", cat:"世界500强", country:"美国", hq:"弗吉尼亚州阿灵顿", founder:"威廉·波音（William Boeing）",
+  {abbr:"Boeing 波音", full:"The Boeing Company", zh:"美国航空航天巨头", cat:"工业航空", country:"美国", hq:"弗吉尼亚州阿灵顿", founder:"威廉·波音（William Boeing）",
    desc:"以创始人威廉·波音(William Boeing)命名。主营：民用与军用飞机、航天、国防。",
    video:"https://www.youtube.com/results?search_query=boeing+history", wiki:"https://baike.baidu.com/item/波音公司"},
-  {abbr:"Siemens 西门子", full:"Siemens AG", zh:"德国工业巨头", cat:"世界500强", country:"德国", hq:"慕尼黑", founder:"维尔纳·冯·西门子",
+  {abbr:"Siemens 西门子", full:"Siemens AG", zh:"德国工业巨头", cat:"工业航空", country:"德国", hq:"慕尼黑", founder:"维尔纳·冯·西门子",
    desc:"以创始人维尔纳·冯·西门子(Werner von Siemens)命名，电报、发电机先驱。主营：工业自动化、能源、医疗、轨道交通。",
    video:"https://www.youtube.com/results?search_query=siemens+history", wiki:"https://baike.baidu.com/item/西门子"},
-  {abbr:"Berkshire Hathaway 伯克希尔", full:"Berkshire Hathaway Inc.", zh:"巴菲特的投资帝国", cat:"世界500强", country:"美国", hq:"内布拉斯加州奥马哈", founder:"沃伦·巴菲特（重组掌舵）",
+  {abbr:"Berkshire Hathaway 伯克希尔", full:"Berkshire Hathaway Inc.", zh:"巴菲特的投资帝国", cat:"金融", country:"美国", hq:"内布拉斯加州奥马哈", founder:"沃伦·巴菲特（重组掌舵）",
    desc:"名字来自两家被合并的老纺织厂 Berkshire 与 Hathaway，后被巴菲特接管转型为投资控股公司。主营：保险与多元化投资。",
    video:"https://www.youtube.com/results?search_query=berkshire+hathaway+buffett+history", wiki:"https://baike.baidu.com/item/伯克希尔哈撒韦"},
-  {abbr:"工商银行 ICBC", full:"Industrial and Commercial Bank of China", zh:"全球最大银行", cat:"世界500强", country:"中国", hq:"北京", founder:"中国政府（1984 年成立）",
+  {abbr:"工商银行 ICBC", full:"Industrial and Commercial Bank of China", zh:"全球最大银行", cat:"金融", country:"中国", hq:"北京", founder:"中国政府（1984 年成立）",
    desc:"全称“中国工商银行”，按资产计常年全球第一大银行。主营：商业银行(存贷、支付、金融服务)。",
    video:"https://www.youtube.com/results?search_query=ICBC+工商银行", wiki:"https://baike.baidu.com/item/中国工商银行"},
-  {abbr:"中国平安 Ping An", full:"Ping An Insurance (Group)", zh:"中国金融保险巨头", cat:"世界500强", country:"中国", hq:"广东深圳", founder:"马明哲",
+  {abbr:"中国平安 Ping An", full:"Ping An Insurance (Group)", zh:"中国金融保险巨头", cat:"金融", country:"中国", hq:"广东深圳", founder:"马明哲",
    desc:"“平安”寓意保险给人平安保障。是中国最大综合金融集团之一。主营：保险、银行、投资、医疗科技。",
    video:"https://www.youtube.com/results?search_query=中国平安+Ping+An", wiki:"https://baike.baidu.com/item/中国平安"},
-  {abbr:"比亚迪 BYD", full:"BYD Company Ltd. (Build Your Dreams)", zh:"全球新能源车龙头", cat:"世界500强", country:"中国", hq:"广东深圳", founder:"王传福",
+  {abbr:"比亚迪 BYD", full:"BYD Company Ltd. (Build Your Dreams)", zh:"全球新能源车龙头", cat:"汽车", country:"中国", hq:"广东深圳", founder:"王传福",
    desc:"英文 BYD = “Build Your Dreams（成就梦想）”。从电池起家，如今是全球销量领先的新能源车企。主营：电动车、电池、电子。",
    video:"https://www.youtube.com/results?search_query=BYD+build+your+dreams", wiki:"https://baike.baidu.com/item/比亚迪"},
-  {abbr:"京东 JD", full:"JD.com, Inc.", zh:"中国电商与物流巨头", cat:"世界500强", country:"中国", hq:"北京", founder:"刘强东",
+  {abbr:"京东 JD", full:"JD.com, Inc.", zh:"中国电商与物流巨头", cat:"科技互联网", country:"中国", hq:"北京", founder:"刘强东",
    desc:"“京东”取自创始人刘强东的“东”与早年女友龚晓京的“京”。以自营+自建物流著称。主营：电商零售、物流。",
    video:"https://www.youtube.com/results?search_query=京东+JD+刘强东", wiki:"https://baike.baidu.com/item/京东"},
-  {abbr:"小米 Xiaomi", full:"Xiaomi Corporation", zh:"中国消费电子公司", cat:"世界500强", country:"中国", hq:"北京", founder:"雷军",
+  {abbr:"小米 Xiaomi", full:"Xiaomi Corporation", zh:"中国消费电子公司", cat:"科技互联网", country:"中国", hq:"北京", founder:"雷军",
    desc:"“小米”寓意从小处做起(“小米加步枪”)，logo “MI” 也代表 Mobile Internet。主营：手机、智能家居(IoT)、近年造车。",
    video:"https://www.youtube.com/results?search_query=小米+Xiaomi+雷军", wiki:"https://baike.baidu.com/item/小米科技"},
 
@@ -1179,40 +1184,37 @@ const DATA = [
    video:"https://www.youtube.com/results?search_query=老干妈+陶华碧", wiki:"https://baike.baidu.com/item/老干妈"},
 
   /* ===== 更多国外名企（含瑞士公司 / 医药公司）===== */
-  {abbr:"LVMH 路威酩轩", full:"LVMH Moët Hennessy Louis Vuitton", zh:"全球最大奢侈品集团", cat:"国外名企", country:"法国", hq:"巴黎", founder:"贝尔纳·阿尔诺整合",
+  {abbr:"LVMH 路威酩轩", full:"LVMH Moët Hennessy Louis Vuitton", zh:"全球最大奢侈品集团", cat:"奢侈品", country:"法国", hq:"巴黎", founder:"贝尔纳·阿尔诺整合",
    desc:"全名 = 酩悦香槟(Moët) + 轩尼诗(Hennessy) + 路易威登(Louis Vuitton)。旗下 70+ 奢侈品牌(Dior、宝格丽、TAG等)。主营：奢侈品。",
    video:"https://www.youtube.com/results?search_query=LVMH", wiki:"https://baike.baidu.com/item/LVMH"},
-  {abbr:"Bayer 拜耳", full:"Bayer AG", zh:"德国医药农业巨头", cat:"国外名企", country:"德国", hq:"勒沃库森", founder:"弗里德里希·拜耳",
+  {abbr:"Bayer 拜耳", full:"Bayer AG", zh:"德国医药农业巨头", cat:"医药健康", country:"德国", hq:"勒沃库森", founder:"弗里德里希·拜耳",
    desc:"阿司匹林的发明者。如今是医药 + 作物科学(农业)巨头。主营：处方药、健康消费品、农业种子与农化。",
    video:"https://www.youtube.com/results?search_query=bayer+aspirin+history", wiki:"https://baike.baidu.com/item/拜耳公司"},
-  {abbr:"Roche 罗氏", full:"F. Hoffmann-La Roche", zh:"瑞士制药与诊断巨头", cat:"国外名企", country:"瑞士", hq:"巴塞尔", founder:"弗里茨·霍夫曼-罗氏",
+  {abbr:"Roche 罗氏", full:"F. Hoffmann-La Roche", zh:"瑞士制药与诊断巨头", cat:"医药健康", country:"瑞士", hq:"巴塞尔", founder:"弗里茨·霍夫曼-罗氏",
    desc:"全球顶级制药公司，尤以抗肿瘤药和体外诊断(IVD)见长。主营：处方药、诊断设备与试剂。",
    video:"https://www.youtube.com/results?search_query=roche+pharma", wiki:"https://baike.baidu.com/item/罗氏制药"},
-  {abbr:"Novartis 诺华", full:"Novartis AG", zh:"瑞士制药巨头", cat:"国外名企", country:"瑞士", hq:"巴塞尔", founder:"汽巴-嘉基与山德士合并",
+  {abbr:"Novartis 诺华", full:"Novartis AG", zh:"瑞士制药巨头", cat:"医药健康", country:"瑞士", hq:"巴塞尔", founder:"汽巴-嘉基与山德士合并",
    desc:"名字源自拉丁语 “novae artes（新技术）”。由两家瑞士老药企合并而来。主营：创新药、仿制药。",
    video:"https://www.youtube.com/results?search_query=novartis", wiki:"https://baike.baidu.com/item/诺华公司"},
-  {abbr:"UBS 瑞银", full:"Union Bank of Switzerland", zh:"瑞士银行巨头", cat:"国外名企", country:"瑞士", hq:"苏黎世", founder:"多家瑞士银行合并",
+  {abbr:"UBS 瑞银", full:"Union Bank of Switzerland", zh:"瑞士银行巨头", cat:"金融", country:"瑞士", hq:"苏黎世", founder:"多家瑞士银行合并",
    desc:"全称“瑞士联合银行”，是全球最大的财富管理(私人银行)机构之一，2023 年收购了瑞士信贷。主营：财富管理、投行。",
    video:"https://www.youtube.com/results?search_query=UBS+bank", wiki:"https://baike.baidu.com/item/瑞士联合银行"},
-  {abbr:"Rolex 劳力士", full:"Rolex SA", zh:"顶级腕表品牌", cat:"国外名企", country:"瑞士", hq:"日内瓦", founder:"汉斯·威尔斯多夫",
+  {abbr:"Rolex 劳力士", full:"Rolex SA", zh:"顶级腕表品牌", cat:"奢侈品", country:"瑞士", hq:"日内瓦", founder:"汉斯·威尔斯多夫",
    desc:"瑞士顶级腕表代名词，名字据说取自易读易发音、各国语言都好念。由基金会持有、不上市。主营：高端机械腕表。",
    video:"https://www.youtube.com/results?search_query=rolex+history", wiki:"https://baike.baidu.com/item/劳力士"},
-  {abbr:"Nestlé→见500强", full:"(雀巢也是瑞士公司)", zh:"瑞士食品巨头", cat:"国外名企", country:"瑞士", hq:"沃韦",
-   desc:"雀巢(Nestlé)同样是瑞士代表企业，详见「世界500强」片区里的雀巢词条。瑞士还以制药、银行、钟表、食品闻名。",
-   video:"https://www.youtube.com/results?search_query=瑞士+知名公司", wiki:"https://baike.baidu.com/item/雀巢公司"},
-  {abbr:"Novo Nordisk 诺和诺德", full:"Novo Nordisk A/S", zh:"减肥药/胰岛素龙头", cat:"国外名企", country:"丹麦", hq:"巴格斯韦尔", founder:"诺和与诺德两家合并",
+  {abbr:"Novo Nordisk 诺和诺德", full:"Novo Nordisk A/S", zh:"减肥药/胰岛素龙头", cat:"医药健康", country:"丹麦", hq:"巴格斯韦尔", founder:"诺和与诺德两家合并",
    desc:"全球糖尿病(胰岛素)与减肥药龙头，明星药司美格鲁肽(Ozempic/Wegovy)让它一度成为欧洲市值最高的公司。主营：生物制药。",
    video:"https://www.youtube.com/results?search_query=novo+nordisk+ozempic", wiki:"https://baike.baidu.com/item/诺和诺德"},
-  {abbr:"AstraZeneca 阿斯利康", full:"AstraZeneca plc", zh:"英瑞制药巨头", cat:"国外名企", country:"英国 / 瑞典", hq:"英国剑桥", founder:"Astra 与 Zeneca 合并",
+  {abbr:"AstraZeneca 阿斯利康", full:"AstraZeneca plc", zh:"英瑞制药巨头", cat:"医药健康", country:"英国 / 瑞典", hq:"英国剑桥", founder:"Astra 与 Zeneca 合并",
    desc:"名字 = 瑞典 Astra + 英国 Zeneca 合并。新冠疫苗与肿瘤药让它广为人知。主营：处方药(肿瘤、呼吸、心血管)。",
    video:"https://www.youtube.com/results?search_query=astrazeneca", wiki:"https://baike.baidu.com/item/阿斯利康"},
-  {abbr:"Eli Lilly 礼来", full:"Eli Lilly and Company", zh:"美国制药巨头", cat:"国外名企", country:"美国", hq:"印第安纳波利斯", founder:"伊莱·礼来(Eli Lilly)",
+  {abbr:"Eli Lilly 礼来", full:"Eli Lilly and Company", zh:"美国制药巨头", cat:"医药健康", country:"美国", hq:"印第安纳波利斯", founder:"伊莱·礼来(Eli Lilly)",
    desc:"以创始人姓名命名。近年靠减肥药(替尔泊肽/Mounjaro)市值飙升，成为全球市值最高的药企之一。主营：处方药。",
    video:"https://www.youtube.com/results?search_query=eli+lilly", wiki:"https://baike.baidu.com/item/礼来公司"},
-  {abbr:"Unilever 联合利华", full:"Unilever plc", zh:"英荷日化食品巨头", cat:"国外名企", country:"英国 / 荷兰", hq:"伦敦", founder:"荷兰人造黄油商 + 英国利华兄弟合并",
+  {abbr:"Unilever 联合利华", full:"Unilever plc", zh:"英荷日化食品巨头", cat:"消费零售", country:"英国 / 荷兰", hq:"伦敦", founder:"荷兰人造黄油商 + 英国利华兄弟合并",
    desc:"由荷兰人造黄油公司与英国利华兄弟肥皂公司合并而来。旗下有多芬、立顿、和路雪等。主营：日化、食品、个护。",
    video:"https://www.youtube.com/results?search_query=unilever", wiki:"https://baike.baidu.com/item/联合利华"},
-  {abbr:"Airbus 空客", full:"Airbus SE", zh:"欧洲航空航天巨头", cat:"国外名企", country:"欧洲（法/德/西等）", hq:"法国图卢兹", founder:"欧洲多国合资",
+  {abbr:"Airbus 空客", full:"Airbus SE", zh:"欧洲航空航天巨头", cat:"工业航空", country:"欧洲（法/德/西等）", hq:"法国图卢兹", founder:"欧洲多国合资",
    desc:"由欧洲多国联合组建，与美国波音并列为全球两大民航客机制造商。主营：民用与军用飞机、直升机、航天。",
    video:"https://www.youtube.com/results?search_query=airbus", wiki:"https://baike.baidu.com/item/空中客车"},
 
@@ -1258,7 +1260,196 @@ const DATA = [
    video:"https://www.youtube.com/results?search_query=什么是算法", wiki:"https://baike.baidu.com/item/算法"},
   {abbr:"框架", full:"Framework", zh:"现成的开发骨架", cat:"计算机基础",
    desc:"前人写好的“半成品骨架”，把常用功能打包好，开发者在上面填业务代码即可，大幅提速。如前端 React、后端 Django。",
-   video:"https://www.youtube.com/results?search_query=什么是开发框架", wiki:"https://baike.baidu.com/item/软件框架"}
+   video:"https://www.youtube.com/results?search_query=什么是开发框架", wiki:"https://baike.baidu.com/item/软件框架"},
+
+  /* ===== 商业·各行业补充公司 ===== */
+  {abbr:"Meta 元宇宙", full:"Meta Platforms", zh:"脸书母公司", cat:"科技互联网", country:"美国", hq:"加州门洛帕克", founder:"马克·扎克伯格",
+   desc:"Facebook 改名而来，名字取自“元宇宙(metaverse)”。旗下有 Facebook、Instagram、WhatsApp。主营：社交、广告、VR/AR、AI。",
+   video:"https://www.youtube.com/results?search_query=meta+facebook", wiki:"https://baike.baidu.com/item/Meta"},
+  {abbr:"Oracle 甲骨文", full:"Oracle Corporation", zh:"数据库巨头", cat:"科技互联网", country:"美国", hq:"德州奥斯汀", founder:"拉里·埃里森",
+   desc:"名字 “Oracle（神谕）” 源自创始团队早年的一个项目代号。主营：企业数据库、云计算、企业软件。",
+   video:"https://www.youtube.com/results?search_query=oracle+company", wiki:"https://baike.baidu.com/item/甲骨文公司"},
+  {abbr:"Netflix 奈飞", full:"Netflix, Inc.", zh:"流媒体鼻祖", cat:"传媒娱乐", country:"美国", hq:"加州洛斯加托斯", founder:"里德·哈斯廷斯等",
+   desc:"名字 = Net(网络) + Flicks(电影俚语)。从邮寄 DVD 起家，开创在线流媒体订阅模式。主营：影视流媒体、原创剧集。",
+   video:"https://www.youtube.com/results?search_query=netflix+history", wiki:"https://baike.baidu.com/item/奈飞"},
+  {abbr:"JPMorgan 摩根大通", full:"JPMorgan Chase & Co.", zh:"美国最大银行", cat:"金融", country:"美国", hq:"纽约", founder:"J.P. 摩根（金融家）",
+   desc:"由金融巨头 J.P. Morgan 与大通银行(Chase)等合并而来。美国资产规模最大的银行。主营：投行、商业银行、资管。",
+   video:"https://www.youtube.com/results?search_query=jpmorgan+chase", wiki:"https://baike.baidu.com/item/摩根大通"},
+  {abbr:"Goldman Sachs 高盛", full:"The Goldman Sachs Group", zh:"顶级投资银行", cat:"金融", country:"美国", hq:"纽约", founder:"马库斯·戈德曼、塞缪尔·萨克斯",
+   desc:"以两位创始人姓氏命名，全球最负盛名的投资银行之一。主营：投行、交易、资产管理。",
+   video:"https://www.youtube.com/results?search_query=goldman+sachs", wiki:"https://baike.baidu.com/item/高盛"},
+  {abbr:"Visa", full:"Visa Inc.", zh:"全球支付网络", cat:"金融", country:"美国", hq:"加州福斯特城", founder:"美国银行(BankAmericard 演变)",
+   desc:"名字简洁、全球各语言都好念。是全球最大的电子支付网络之一(与万事达并列)。主营：银行卡支付清算网络。",
+   video:"https://www.youtube.com/results?search_query=visa+payment+network", wiki:"https://baike.baidu.com/item/Visa"},
+  {abbr:"中国石油 PetroChina", full:"PetroChina Company Limited", zh:"中国石油巨头", cat:"能源", country:"中国", hq:"北京", founder:"国有企业(中石油集团)",
+   desc:"中国最大的油气生产商之一，中石油集团旗下上市公司。主营：石油天然气勘探、开采、炼化、销售。",
+   video:"https://www.youtube.com/results?search_query=中国石油+PetroChina", wiki:"https://baike.baidu.com/item/中国石油天然气股份有限公司"},
+  {abbr:"Chevron 雪佛龙", full:"Chevron Corporation", zh:"美国石油巨头", cat:"能源", country:"美国", hq:"加州", founder:"源自标准石油加州公司",
+   desc:"美国第二大石油公司，logo 是 V 形“雪佛龙”纹章。主营：石油天然气一体化业务。",
+   video:"https://www.youtube.com/results?search_query=chevron+oil", wiki:"https://baike.baidu.com/item/雪佛龙"},
+  {abbr:"Merck 默克", full:"Merck & Co. / Merck KGaA", zh:"老牌制药巨头", cat:"医药健康", country:"美国 / 德国", hq:"美国新泽西 / 德国达姆施塔特", founder:"默克家族",
+   desc:"源自德国默克家族(全球最古老药企之一)，二战后美国分支独立为默沙东(MSD)。主营：处方药、疫苗、生命科学。",
+   video:"https://www.youtube.com/results?search_query=merck+pharma", wiki:"https://baike.baidu.com/item/默克集团"},
+  {abbr:"Costco 开市客", full:"Costco Wholesale", zh:"会员制仓储超市", cat:"消费零售", country:"美国", hq:"华盛顿州", founder:"杰弗里·布罗特曼、詹姆斯·辛内加尔",
+   desc:"会员制仓储量贩超市，靠会员费盈利、商品加价极低，以高性价比和极佳口碑著称。主营：仓储零售。",
+   video:"https://www.youtube.com/results?search_query=costco+business+model", wiki:"https://baike.baidu.com/item/好市多"},
+  {abbr:"L'Oréal 欧莱雅", full:"L'Oréal S.A.", zh:"全球最大化妆品集团", cat:"消费零售", country:"法国", hq:"巴黎", founder:"欧仁·舒莱尔",
+   desc:"由化学家欧仁·舒莱尔从染发剂起家创立，全球最大美妆集团。旗下兰蔻、巴黎欧莱雅等。主营：化妆品、护肤、美发。",
+   video:"https://www.youtube.com/results?search_query=loreal+history", wiki:"https://baike.baidu.com/item/欧莱雅"},
+  {abbr:"General Electric 通用电气", full:"General Electric (GE)", zh:"美国老牌工业巨头", cat:"工业航空", country:"美国", hq:"马萨诸塞州", founder:"托马斯·爱迪生等",
+   desc:"由爱迪生的电气公司合并而来，曾是美国工业象征。近年拆分为航空、医疗、能源三家。主营：航空发动机、能源、医疗设备。",
+   video:"https://www.youtube.com/results?search_query=general+electric+history", wiki:"https://baike.baidu.com/item/通用电气"},
+  {abbr:"现代 Hyundai", full:"Hyundai Motor Company", zh:"韩国汽车巨头", cat:"汽车", country:"韩国", hq:"首尔", founder:"郑周永",
+   desc:"“现代(Hyundai)”韩语意为“现代/当代”。韩国最大车企，旗下含起亚、捷尼赛思。主营：汽车制造。",
+   video:"https://www.youtube.com/results?search_query=hyundai+motor", wiki:"https://baike.baidu.com/item/现代汽车"},
+
+  /* ===== 商业·投资人 ===== */
+  {abbr:"查理·芒格 Munger", full:"Charlie Munger", zh:"巴菲特黄金搭档", cat:"投资人", country:"美国",
+   desc:"巴菲特一生的合伙人、伯克希尔副主席，以“多元思维模型”和犀利智慧著称，影响了巴菲特的投资哲学。",
+   video:"https://www.youtube.com/results?search_query=charlie+munger", wiki:"https://baike.baidu.com/item/查理·芒格"},
+  {abbr:"本杰明·格雷厄姆", full:"Benjamin Graham", zh:"价值投资之父", cat:"投资人", country:"美国",
+   desc:"《聪明的投资者》《证券分析》作者，价值投资理论奠基人，巴菲特的导师。提出“安全边际”“市场先生”等经典概念。",
+   video:"https://www.youtube.com/results?search_query=benjamin+graham+value+investing", wiki:"https://baike.baidu.com/item/本杰明·格雷厄姆"},
+  {abbr:"乔治·索罗斯 Soros", full:"George Soros", zh:"传奇宏观投机者", cat:"投资人", country:"美国（匈牙利裔）",
+   desc:"量子基金创始人，以“反身性理论”和大胆的宏观押注闻名，1992 年“狙击英镑”一战封神。也是知名慈善家。",
+   video:"https://www.youtube.com/results?search_query=george+soros", wiki:"https://baike.baidu.com/item/乔治·索罗斯"},
+  {abbr:"雷·达利欧 Dalio", full:"Ray Dalio", zh:"桥水创始人", cat:"投资人", country:"美国",
+   desc:"全球最大对冲基金桥水(Bridgewater)创始人，《原则》作者，倡导“全天候”策略与极度透明的决策文化。",
+   video:"https://www.youtube.com/results?search_query=ray+dalio+principles", wiki:"https://baike.baidu.com/item/瑞·达利欧"},
+  {abbr:"彼得·林奇 Lynch", full:"Peter Lynch", zh:"传奇基金经理", cat:"投资人", country:"美国",
+   desc:"执掌富达麦哲伦基金期间创造惊人回报，倡导“投资你所了解的”，《彼得·林奇的成功投资》广为流传。",
+   video:"https://www.youtube.com/results?search_query=peter+lynch+investing", wiki:"https://baike.baidu.com/item/彼得·林奇"},
+  {abbr:"凯西·伍德 Cathie Wood", full:"Cathie Wood", zh:"“木头姐”", cat:"投资人", country:"美国",
+   desc:"ARK Invest 创始人，专注颠覆性科技(电动车、AI、基因、加密)的激进成长投资，风格高调、争议与拥趸并存。",
+   video:"https://www.youtube.com/results?search_query=cathie+wood+ARK", wiki:"https://baike.baidu.com/item/凯瑟琳·伍德"},
+  {abbr:"段永平", full:"Duan Yongping", zh:"中国“隐形投资大佬”", cat:"投资人", country:"中国",
+   desc:"步步高创始人，OPPO、vivo 背后推手，巴菲特价值投资的中国实践者，早年重仓苹果、网易、茅台等获利丰厚。是拼多多黄峥的导师。",
+   video:"https://www.youtube.com/results?search_query=段永平+投资", wiki:"https://baike.baidu.com/item/段永平"},
+  {abbr:"张磊", full:"Zhang Lei", zh:"高瓴资本创始人", cat:"投资人", country:"中国",
+   desc:"高瓴资本创始人，亚洲最大的私募股权投资机构之一掌门人，长期价值投资理念，著有《价值》。重仓腾讯、京东等。",
+   video:"https://www.youtube.com/results?search_query=张磊+高瓴", wiki:"https://baike.baidu.com/item/张磊"},
+
+  /* ===== 商业·投资机构 ===== */
+  {abbr:"BlackRock 贝莱德", full:"BlackRock, Inc.", zh:"全球最大资产管理公司", cat:"投资机构", country:"美国", hq:"纽约", founder:"拉里·芬克(Larry Fink)",
+   desc:"全球最大的资产管理公司，管理规模超 10 万亿美元，其风险系统 Aladdin 影响全球市场。主营：基金、ETF(iShares)、资管。",
+   video:"https://www.youtube.com/results?search_query=blackrock", wiki:"https://baike.baidu.com/item/贝莱德"},
+  {abbr:"Vanguard 先锋领航", full:"The Vanguard Group", zh:"指数基金鼻祖", cat:"投资机构", country:"美国", hq:"宾夕法尼亚州", founder:"约翰·博格(John Bogle)",
+   desc:"创始人博格发明了面向大众的低成本指数基金，深刻改变了投资行业。是全球第二大资管公司。主营：指数基金、ETF。",
+   video:"https://www.youtube.com/results?search_query=vanguard+bogle+index+fund", wiki:"https://baike.baidu.com/item/先锋集团"},
+  {abbr:"Blackstone 黑石", full:"Blackstone Inc.", zh:"全球最大另类资产管理", cat:"投资机构", country:"美国", hq:"纽约", founder:"苏世民、彼得森",
+   desc:"全球最大的私募股权(PE)与另类投资巨头，地产、并购见长。创始人苏世民著有《我的经验与教训》。主营：PE、地产、信贷。",
+   video:"https://www.youtube.com/results?search_query=blackstone+schwarzman", wiki:"https://baike.baidu.com/item/黑石集团"},
+  {abbr:"Sequoia 红杉资本", full:"Sequoia Capital", zh:"顶级风险投资", cat:"投资机构", country:"美国", hq:"加州门洛帕克", founder:"唐·瓦伦丁(Don Valentine)",
+   desc:"硅谷最负盛名的风险投资机构，早期投中苹果、谷歌、英伟达等。名字取自巨大长寿的红杉树。主营：创业风险投资(VC)。",
+   video:"https://www.youtube.com/results?search_query=sequoia+capital", wiki:"https://baike.baidu.com/item/红杉资本"},
+  {abbr:"a16z", full:"Andreessen Horowitz", zh:"硅谷新锐风投", cat:"投资机构", country:"美国", hq:"加州门洛帕克", founder:"马克·安德森、本·霍洛维茨",
+   desc:"名字 a16z = Andreessen 与 Horowitz 之间有 16 个字母。重押软件、加密、AI 的顶级风投。主营：科技风险投资。",
+   video:"https://www.youtube.com/results?search_query=andreessen+horowitz+a16z", wiki:"https://baike.baidu.com/item/Andreessen·Horowitz"},
+  {abbr:"高瓴资本 Hillhouse", full:"Hillhouse Investment", zh:"亚洲顶级投资机构", cat:"投资机构", country:"中国", hq:"新加坡/香港/北京", founder:"张磊",
+   desc:"张磊创立的亚洲最大私募之一，长期价值投资，覆盖一级与二级市场，代表案例有腾讯、京东、百丽等。主营：股权投资。",
+   video:"https://www.youtube.com/results?search_query=高瓴资本+张磊", wiki:"https://baike.baidu.com/item/高瓴资本"},
+  {abbr:"软银愿景基金", full:"SoftBank Vision Fund", zh:"科技巨额投资基金", cat:"投资机构", country:"日本", hq:"东京", founder:"孙正义",
+   desc:"孙正义旗下千亿美元级科技投资基金，曾豪赌 Uber、WeWork、字节跳动、ARM 等，风格激进、毁誉参半。主营：科技成长投资。",
+   video:"https://www.youtube.com/results?search_query=softbank+vision+fund+son", wiki:"https://baike.baidu.com/item/软银愿景基金"},
+
+  /* ===== 商业·奢侈品 ===== */
+  {abbr:"Hermès 爱马仕", full:"Hermès International", zh:"顶级奢侈品", cat:"奢侈品", country:"法国", hq:"巴黎", founder:"蒂埃里·爱马仕",
+   desc:"从马具皮具起家的法国顶奢，以铂金包(Birkin)、丝巾闻名，主打稀缺与匠心，是奢侈品金字塔尖。主营：皮具、时装、配饰。",
+   video:"https://www.youtube.com/results?search_query=hermes+birkin+history", wiki:"https://baike.baidu.com/item/爱马仕"},
+  {abbr:"Chanel 香奈儿", full:"Chanel", zh:"法国时装香水代表", cat:"奢侈品", country:"法国", hq:"巴黎", founder:"可可·香奈儿(Coco Chanel)",
+   desc:"由可可·香奈儿创立，解放了 20 世纪女性着装。N°5 香水、小黑裙、双 C logo 成为经典。私人持有、不上市。主营：时装、香水、珠宝。",
+   video:"https://www.youtube.com/results?search_query=chanel+coco+history", wiki:"https://baike.baidu.com/item/香奈儿"},
+  {abbr:"Gucci 古驰", full:"Gucci", zh:"意大利奢侈时尚", cat:"奢侈品", country:"意大利", hq:"佛罗伦萨", founder:"古驰奥·古驰(Guccio Gucci)",
+   desc:"意大利奢侈时装品牌，开云集团(Kering)的核心。以双 G logo、大胆设计著称。主营：时装、皮具、配饰。",
+   video:"https://www.youtube.com/results?search_query=gucci+history", wiki:"https://baike.baidu.com/item/古驰"},
+  {abbr:"Cartier 卡地亚", full:"Cartier", zh:"“珠宝商的皇帝”", cat:"奢侈品", country:"法国", hq:"巴黎", founder:"路易-弗朗索瓦·卡地亚",
+   desc:"被英王爱德华七世称为“珠宝商的皇帝、皇帝的珠宝商”。历峰集团(Richemont)旗下。主营：高级珠宝、腕表。",
+   video:"https://www.youtube.com/results?search_query=cartier+history", wiki:"https://baike.baidu.com/item/卡地亚"},
+  {abbr:"Ferrari 法拉利", full:"Ferrari S.p.A.", zh:"意大利超跑之王", cat:"奢侈品", country:"意大利", hq:"马拉内罗", founder:"恩佐·法拉利(Enzo Ferrari)",
+   desc:"跃马标志的意大利超级跑车品牌，F1 赛场常胜军，以稀缺、性能与品牌信仰著称。主营：高性能跑车。",
+   video:"https://www.youtube.com/results?search_query=ferrari+enzo+history", wiki:"https://baike.baidu.com/item/法拉利"},
+  {abbr:"Rolls-Royce 劳斯莱斯", full:"Rolls-Royce", zh:"顶级豪华车 / 航发", cat:"奢侈品", country:"英国", hq:"英国", founder:"查尔斯·罗尔斯、亨利·罗伊斯",
+   desc:"以两位创始人命名的英国顶级品牌。豪华汽车部分现属宝马；另有独立的劳斯莱斯航空发动机公司。主营：超豪华汽车 /（另一家做航空发动机）。",
+   video:"https://www.youtube.com/results?search_query=rolls+royce+history", wiki:"https://baike.baidu.com/item/劳斯莱斯"},
+  {abbr:"Tiffany 蒂芙尼", full:"Tiffany & Co.", zh:"美国珠宝代表", cat:"奢侈品", country:"美国", hq:"纽约", founder:"查尔斯·刘易斯·蒂芙尼",
+   desc:"以标志性“蒂芙尼蓝”和钻石婚戒闻名，《蒂凡尼的早餐》更添浪漫光环。2021 年被 LVMH 收购。主营：高级珠宝。",
+   video:"https://www.youtube.com/results?search_query=tiffany+history", wiki:"https://baike.baidu.com/item/蒂芙尼"},
+  {abbr:"Kering 开云集团", full:"Kering", zh:"法国第二大奢侈品集团", cat:"奢侈品", country:"法国", hq:"巴黎", founder:"弗朗索瓦·皮诺",
+   desc:"仅次于 LVMH 的法国奢侈品集团，旗下有 Gucci、YSL、宝缇嘉(BV)、巴黎世家等。主营：奢侈时装与配饰。",
+   video:"https://www.youtube.com/results?search_query=kering+luxury+group", wiki:"https://baike.baidu.com/item/开云集团"},
+
+  /* ===== 旅行·欧洲景点（参考《孤独星球》）===== */
+  {abbr:"埃菲尔铁塔", full:"Eiffel Tower", zh:"法国·巴黎地标", cat:"欧洲景点", country:"法国",
+   desc:"为 1889 年巴黎世博会而建、工程师埃菲尔设计的铁塔，曾遭嫌弃如今是浪漫之都象征。夜晚整点闪灯。建议登顶看塞纳河全景。",
+   video:"https://www.youtube.com/results?search_query=eiffel+tower+paris", wiki:"https://baike.baidu.com/item/埃菲尔铁塔"},
+  {abbr:"罗马斗兽场", full:"Colosseum", zh:"意大利·罗马古迹", cat:"欧洲景点", country:"意大利",
+   desc:"近 2000 年历史的古罗马角斗场，可容纳数万观众，是罗马帝国工程与文明的象征。建议搭配古罗马广场一起逛。",
+   video:"https://www.youtube.com/results?search_query=colosseum+rome", wiki:"https://baike.baidu.com/item/罗马斗兽场"},
+  {abbr:"圣家堂", full:"Sagrada Família", zh:"西班牙·巴塞罗那", cat:"欧洲景点", country:"西班牙",
+   desc:"建筑大师高迪的未竟杰作，建了一百多年仍未完工。光影与森林般的内部令人震撼，是巴塞罗那的灵魂。务必提前订票。",
+   video:"https://www.youtube.com/results?search_query=sagrada+familia+gaudi", wiki:"https://baike.baidu.com/item/圣家族大教堂"},
+  {abbr:"圣托里尼", full:"Santorini", zh:"希腊·爱琴海火山岛", cat:"欧洲景点", country:"希腊",
+   desc:"爱琴海上的火山岛，蓝顶白墙小镇沿悬崖而建，伊亚(Oia)的日落世界闻名，是蜜月与摄影圣地。",
+   video:"https://www.youtube.com/results?search_query=santorini+greece", wiki:"https://baike.baidu.com/item/圣托里尼岛"},
+  {abbr:"威尼斯", full:"Venice", zh:"意大利·水城", cat:"欧洲景点", country:"意大利",
+   desc:"建在潟湖之上的“水上之城”，以运河、贡多拉、圣马可广场和面具狂欢节闻名。建议清晨避开人潮，钻进小巷迷路。",
+   video:"https://www.youtube.com/results?search_query=venice+italy", wiki:"https://baike.baidu.com/item/威尼斯"},
+  {abbr:"布拉格", full:"Prague", zh:"捷克·百塔之城", cat:"欧洲景点", country:"捷克",
+   desc:"保存完好的中世纪老城，查理大桥、布拉格城堡、天文钟和红顶老街如童话。物价相对亲民，是中欧必访。",
+   video:"https://www.youtube.com/results?search_query=prague+czech", wiki:"https://baike.baidu.com/item/布拉格"},
+  {abbr:"少女峰", full:"Jungfrau", zh:"瑞士·阿尔卑斯之巅", cat:"欧洲景点", country:"瑞士",
+   desc:"瑞士阿尔卑斯名峰，齿轮火车可直达欧洲海拔最高的火车站“欧洲之巅”，雪山冰川壮丽。少女峰地区徒步线路一流。",
+   video:"https://www.youtube.com/results?search_query=jungfrau+switzerland", wiki:"https://baike.baidu.com/item/少女峰"},
+  {abbr:"新天鹅堡", full:"Neuschwanstein Castle", zh:"德国·童话城堡", cat:"欧洲景点", country:"德国",
+   desc:"巴伐利亚国王路德维希二世所建的梦幻城堡，传为迪士尼城堡原型，雪山森林环抱。建议到玛丽恩桥拍全景。",
+   video:"https://www.youtube.com/results?search_query=neuschwanstein+castle", wiki:"https://baike.baidu.com/item/新天鹅堡"},
+  {abbr:"哈尔施塔特", full:"Hallstatt", zh:"奥地利·湖畔小镇", cat:"欧洲景点", country:"奥地利",
+   desc:"被誉为“世界最美小镇”，湖光山色与木屋倒影如画，是世界文化遗产。小而精，适合慢逛半天到一天。",
+   video:"https://www.youtube.com/results?search_query=hallstatt+austria", wiki:"https://baike.baidu.com/item/哈尔施塔特"},
+  {abbr:"梵蒂冈圣彼得大教堂", full:"St. Peter's Basilica", zh:"梵蒂冈·天主教中心", cat:"欧洲景点", country:"梵蒂冈",
+   desc:"世界最大的天主教堂，米开朗基罗等大师参与设计，登穹顶可俯瞰圣彼得广场与罗马。可顺道看梵蒂冈博物馆与西斯廷礼拜堂。",
+   video:"https://www.youtube.com/results?search_query=st+peters+basilica+vatican", wiki:"https://baike.baidu.com/item/圣彼得大教堂"},
+  {abbr:"阿姆斯特丹运河", full:"Amsterdam Canals", zh:"荷兰·运河之城", cat:"欧洲景点", country:"荷兰",
+   desc:"17 世纪黄金时代开凿的同心运河带(世界遗产)，山形墙老屋、自行车与博物馆云集。坐游船看城最惬意。",
+   video:"https://www.youtube.com/results?search_query=amsterdam+canals", wiki:"https://baike.baidu.com/item/阿姆斯特丹"},
+  {abbr:"冰岛黄金圈", full:"Golden Circle, Iceland", zh:"冰岛·自然奇观", cat:"欧洲景点", country:"冰岛",
+   desc:"冰岛经典环线：议会旧址、间歇泉、黄金瀑布三大奇观一日可览；冬季还可追极光，夏季体验极昼。",
+   video:"https://www.youtube.com/results?search_query=iceland+golden+circle", wiki:"https://baike.baidu.com/item/冰岛"},
+  {abbr:"普罗旺斯", full:"Provence", zh:"法国·薰衣草之乡", cat:"欧洲景点", country:"法国",
+   desc:"法国南部度假胜地，夏季(6-8 月)成片紫色薰衣草田、向日葵与古镇阳光，是慢生活与摄影的代名词。",
+   video:"https://www.youtube.com/results?search_query=provence+lavender+france", wiki:"https://baike.baidu.com/item/普罗旺斯"},
+
+  /* ===== 旅行·世界景点 ===== */
+  {abbr:"长城", full:"Great Wall of China", zh:"中国·世界奇迹", cat:"世界景点", country:"中国",
+   desc:"绵延上万里的古代军事防御工程，世界文化遗产与人类奇迹。八达岭、慕田峪、金山岭等段各有风味。",
+   video:"https://www.youtube.com/results?search_query=great+wall+of+china", wiki:"https://baike.baidu.com/item/长城"},
+  {abbr:"富士山", full:"Mount Fuji", zh:"日本·圣山", cat:"世界景点", country:"日本",
+   desc:"日本最高峰与精神象征，对称雪顶圆锥极美。河口湖一带是观富士、住温泉的经典地，夏季可登顶。",
+   video:"https://www.youtube.com/results?search_query=mount+fuji+japan", wiki:"https://baike.baidu.com/item/富士山"},
+  {abbr:"京都", full:"Kyoto", zh:"日本·千年古都", cat:"世界景点", country:"日本",
+   desc:"日本古都，寺庙神社、艺伎花街与枯山水庭园密集，伏见稻荷千本鸟居、清水寺、岚山是必访。春樱秋枫最美。",
+   video:"https://www.youtube.com/results?search_query=kyoto+japan+temples", wiki:"https://baike.baidu.com/item/京都市"},
+  {abbr:"马丘比丘", full:"Machu Picchu", zh:"秘鲁·印加天空之城", cat:"世界景点", country:"秘鲁",
+   desc:"藏在安第斯高山云雾中的印加古城遗址，世界新七大奇迹之一。可徒步印加古道抵达，需提前预约限流门票。",
+   video:"https://www.youtube.com/results?search_query=machu+picchu+peru", wiki:"https://baike.baidu.com/item/马丘比丘"},
+  {abbr:"吴哥窟", full:"Angkor Wat", zh:"柬埔寨·高棉神庙", cat:"世界景点", country:"柬埔寨",
+   desc:"世界最大的宗教建筑群，高棉帝国杰作，日出剪影与古树盘根的塔布茏寺尤为震撼。建议买多日票慢游。",
+   video:"https://www.youtube.com/results?search_query=angkor+wat+cambodia", wiki:"https://baike.baidu.com/item/吴哥窟"},
+  {abbr:"泰姬陵", full:"Taj Mahal", zh:"印度·爱情陵墓", cat:"世界景点", country:"印度",
+   desc:"莫卧儿皇帝为爱妃所建的白色大理石陵墓，对称之美登峰造极，世界新七大奇迹。清晨与黄昏光线最美。",
+   video:"https://www.youtube.com/results?search_query=taj+mahal+india", wiki:"https://baike.baidu.com/item/泰姬陵"},
+  {abbr:"吉萨金字塔", full:"Pyramids of Giza", zh:"埃及·古代奇迹", cat:"世界景点", country:"埃及",
+   desc:"古埃及法老陵墓，胡夫金字塔是古代世界七大奇迹中唯一留存者，旁有狮身人面像。开罗近郊即可抵达。",
+   video:"https://www.youtube.com/results?search_query=pyramids+of+giza+egypt", wiki:"https://baike.baidu.com/item/吉萨金字塔"},
+  {abbr:"美国大峡谷", full:"Grand Canyon", zh:"美国·自然奇观", cat:"世界景点", country:"美国",
+   desc:"科罗拉多河经数百万年切出的巨大峡谷，层层岩壁壮阔无垠，南缘观景点最经典，日出日落色彩惊人。",
+   video:"https://www.youtube.com/results?search_query=grand+canyon", wiki:"https://baike.baidu.com/item/科罗拉多大峡谷"},
+  {abbr:"自由女神像", full:"Statue of Liberty", zh:"美国·纽约地标", cat:"世界景点", country:"美国",
+   desc:"法国赠予美国的自由象征，矗立于纽约港自由岛，可乘渡轮近观或登基座。象征自由与移民之梦。",
+   video:"https://www.youtube.com/results?search_query=statue+of+liberty", wiki:"https://baike.baidu.com/item/自由女神像"},
+  {abbr:"巴厘岛", full:"Bali", zh:"印尼·度假天堂", cat:"世界景点", country:"印度尼西亚",
+   desc:"印尼著名度假岛，火山、梯田、海滩与印度教庙宇并存，乌布的文艺与海神庙的日落各具风情，适合度假与冲浪。",
+   video:"https://www.youtube.com/results?search_query=bali+indonesia", wiki:"https://baike.baidu.com/item/巴厘岛"}
 ];
 
 /* ===== 渲染逻辑 ===== */
@@ -1266,16 +1457,42 @@ const listEl = document.getElementById('list');
 const qEl = document.getElementById('q');
 const countEl = document.getElementById('count');
 const filtersEl = document.getElementById('filters');
+const groupsEl = document.getElementById('groups');
+
+/* 四大板块 → 各自包含的小分类 */
+const GROUPS = {
+  "AI":["基础","经典模型","训练","推理部署","硬件算力","RAG检索","Agent应用","采样参数","评估安全","生成","前沿","模型产品","公司机构"],
+  "商业":["科技互联网","汽车","能源","金融","医药健康","消费零售","工业航空","传媒娱乐","奢侈品","世界首富","中国首富","中国知名企业","投资人","投资机构"],
+  "计算机":["计算机基础"],
+  "旅行":["欧洲景点","世界景点"]
+};
+const ALLCATS = Array.from(new Set(DATA.map(d=>d.cat)));
+let activeGroup = '全部';
 let activeCat = '全部';
 
-const cats = ['全部', ...Array.from(new Set(DATA.map(d=>d.cat)))];
-filtersEl.innerHTML = cats.map(c=>`<span class="chip${c==='全部'?' active':''}" data-cat="${c}">${c}</span>`).join('');
+const groupNames = ['全部', ...Object.keys(GROUPS)];
+groupsEl.innerHTML = groupNames.map(g=>`<span class="grp${g==='全部'?' active':''}" data-g="${g}">${g}</span>`).join('');
+
+function catsForGroup(g){
+  return g==='全部' ? ALLCATS : (GROUPS[g]||[]).filter(c=>ALLCATS.includes(c));
+}
+function renderChips(){
+  const cats = ['全部', ...catsForGroup(activeGroup)];
+  filtersEl.innerHTML = cats.map(c=>`<span class="chip${c===activeCat?' active':''}" data-cat="${c}">${c}</span>`).join('');
+}
+groupsEl.addEventListener('click', e=>{
+  if(!e.target.classList.contains('grp')) return;
+  activeGroup = e.target.dataset.g; activeCat = '全部';
+  [...groupsEl.children].forEach(x=>x.classList.toggle('active', x.dataset.g===activeGroup));
+  renderChips(); render();
+});
 filtersEl.addEventListener('click', e=>{
   if(!e.target.classList.contains('chip')) return;
   activeCat = e.target.dataset.cat;
   [...filtersEl.children].forEach(c=>c.classList.toggle('active', c.dataset.cat===activeCat));
   render();
 });
+renderChips();
 
 function esc(s){return s.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
 
@@ -1317,9 +1534,10 @@ function speak(text, btn){
 function render(){
   const q = qEl.value.trim().toLowerCase();
   const items = DATA.filter(d=>{
+    const inGroup = activeGroup==='全部' || (GROUPS[activeGroup]||[]).includes(d.cat);
     const matchCat = activeCat==='全部' || d.cat===activeCat;
-    const hay = (d.abbr+' '+d.full+' '+d.zh+' '+d.desc).toLowerCase();
-    return matchCat && (!q || hay.includes(q));
+    const hay = (d.abbr+' '+d.full+' '+d.zh+' '+d.desc+' '+(d.country||'')+' '+(d.founder||'')).toLowerCase();
+    return inGroup && matchCat && (!q || hay.includes(q));
   });
   countEl.textContent = `共 ${items.length} 个名词`;
   if(!items.length){ listEl.innerHTML = '<div class="empty">没有匹配的名词，换个关键词试试 🔍</div>'; return; }
