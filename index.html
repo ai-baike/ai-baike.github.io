@@ -2041,6 +2041,79 @@ const DATA = [
    desc:"谷歌提供的在线 AI 开发/调试平台，可以在浏览器里试用 Gemini 模型、管理 API Key、查看配额和用量。你刚才看的 Rate Limit 页面就是它的一部分。",
    video:"https://www.youtube.com/results?search_query=google+ai+studio", wiki:"https://en.wikipedia.org/wiki/Google_AI"},
 
+  /* ===== OpenRouter 榜单补充：还没收录的厂商/模型 ===== */
+  {abbr:"Nous Research", full:"Nous Research", zh:"开源微调社区", cat:"公司机构", country:"美国",
+   desc:"专注于开源模型微调与对齐的 AI 研究团队，代表作 Hermes 系列（基于 Llama 等开源模型微调），在社区影响力很大。",
+   video:"https://www.youtube.com/results?search_query=nous+research+hermes", wiki:"https://nousresearch.com/"},
+  {abbr:"Hermes", full:"Hermes (by Nous Research)", zh:"社区明星微调模型", cat:"模型产品",
+   desc:"Nous Research 基于 Llama 等开源底座微调出的系列模型，以工具调用、角色扮演和指令遵循能力强著称，在开源社区极受欢迎。",
+   video:"https://www.youtube.com/results?search_query=nous+hermes+model", wiki:"https://nousresearch.com/"},
+  {abbr:"Poolside", full:"Poolside AI", zh:"AI 编程公司", cat:"公司机构", country:"美国",
+   desc:"专注于代码生成的 AI 公司，代表模型 Laguna 系列，主打编程场景，在 OpenRouter 榜单上有一席之地。",
+   video:"https://www.youtube.com/results?search_query=poolside+ai+coding", wiki:"https://www.poolside.ai/"},
+  {abbr:"Arcee AI", full:"Arcee AI", zh:"企业小模型定制", cat:"公司机构", country:"美国",
+   desc:"专注为企业定制和合并小型高效模型的 AI 公司，代表作 Trinity 等思考模型，走'小而精'路线。",
+   video:"https://www.youtube.com/results?search_query=arcee+ai", wiki:"https://www.arcee.ai/"},
+  {abbr:"IBM Granite", full:"IBM Granite", zh:"IBM 的开源企业模型", cat:"模型产品",
+   desc:"IBM 推出的开源企业级模型系列，主打可信赖、可溯源、面向企业合规场景，是 IBM 在大模型时代的新尝试。",
+   video:"https://www.youtube.com/results?search_query=IBM+granite+model", wiki:"https://en.wikipedia.org/wiki/IBM"},
+  {abbr:"inclusionAI Ring", full:"inclusionAI Ring", zh:"蚂蚁集团大模型", cat:"模型产品",
+   desc:"蚂蚁集团(支付宝母公司)推出的开源大模型，参数规模达万亿级别(1T)，在 OpenRouter 上可调用。",
+   video:"https://www.youtube.com/results?search_query=inclusionAI+ring+ant+group", wiki:"https://baike.baidu.com/item/蚂蚁集团"},
+  {abbr:"OpenRouter Fusion", full:"OpenRouter Fusion", zh:"多模型融合路由", cat:"模型产品",
+   desc:"OpenRouter 自研的'融合'模型：把同一个请求分发给多个模型，综合它们的回答给出最优结果。用聚合的方式提升质量。",
+   video:"https://www.youtube.com/results?search_query=openrouter+fusion", wiki:"https://openrouter.ai/"},
+  {abbr:"ByteDance Seed", full:"ByteDance Seed", zh:"字节自研底座模型", cat:"模型产品",
+   desc:"字节跳动自研的基础大模型系列(Seed 1.6/2.0 等)，是豆包 App 背后的技术引擎，也通过火山引擎和 OpenRouter 对外提供。",
+   video:"https://www.youtube.com/results?search_query=bytedance+seed+model", wiki:"https://baike.baidu.com/item/字节跳动"},
+
+  /* ===== 科技创始人（AI / 芯片 / 互联网）===== */
+  {abbr:"黄仁勋", full:"Jensen Huang", zh:"英伟达创始人兼 CEO", cat:"科技创始人", country:"美国（台湾出生）",
+   desc:"英伟达联合创始人兼 CEO，带领英伟达从游戏显卡公司转型为 AI 算力霸主，身穿标志性皮夹克，被称为'AI 时代的军火商'。2024 年起英伟达多次成为全球市值最高公司。",
+   video:"https://www.youtube.com/results?search_query=黄仁勋+jensen+huang", wiki:"https://baike.baidu.com/item/黄仁勋"},
+  {abbr:"Sam Altman", full:"Sam Altman", zh:"OpenAI CEO", cat:"科技创始人", country:"美国",
+   desc:"OpenAI 的 CEO，推动 ChatGPT 横空出世、引爆全球 AI 浪潮的关键人物。2023 年经历过被董事会解雇又迅速回归的戏剧性事件。",
+   video:"https://www.youtube.com/results?search_query=sam+altman+openai", wiki:"https://baike.baidu.com/item/萨姆·奥特曼"},
+  {abbr:"Dario Amodei", full:"Dario Amodei", zh:"Anthropic CEO", cat:"科技创始人", country:"美国",
+   desc:"Anthropic 联合创始人兼 CEO，前 OpenAI 研究副总裁，因对 AI 安全理念的分歧离开创立 Anthropic。与妹妹 Daniela Amodei(总裁)共同掌舵。",
+   video:"https://www.youtube.com/results?search_query=dario+amodei+anthropic", wiki:"https://en.wikipedia.org/wiki/Dario_Amodei"},
+  {abbr:"Sundar Pichai", full:"Sundar Pichai", zh:"谷歌/Alphabet CEO", cat:"科技创始人", country:"美国（印度出生）",
+   desc:"谷歌及母公司 Alphabet 的 CEO，主导谷歌的 AI 战略(Gemini、TPU、DeepMind 整合)。是硅谷印度裔高管的代表人物。",
+   video:"https://www.youtube.com/results?search_query=sundar+pichai", wiki:"https://baike.baidu.com/item/桑达尔·皮查伊"},
+  {abbr:"Satya Nadella", full:"Satya Nadella", zh:"微软 CEO", cat:"科技创始人", country:"美国（印度出生）",
+   desc:"2014 年接任微软 CEO 后带领微软转型云和 AI，重押 OpenAI 投资、将 AI 植入全线产品(Copilot)，使微软重回巅峰市值。",
+   video:"https://www.youtube.com/results?search_query=satya+nadella+microsoft", wiki:"https://baike.baidu.com/item/萨蒂亚·纳德拉"},
+  {abbr:"Lisa Su 苏姿丰", full:"Lisa Su", zh:"AMD CEO", cat:"科技创始人", country:"美国（台湾出生）",
+   desc:"AMD 的 CEO，接手时 AMD 濒临破产，靠 Zen 架构和 Instinct AI 芯片重振公司，是半导体行业最受尊敬的女性领袖。与黄仁勋是表亲。",
+   video:"https://www.youtube.com/results?search_query=lisa+su+AMD", wiki:"https://baike.baidu.com/item/苏姿丰"},
+  {abbr:"Morris Chang 张忠谋", full:"Morris Chang", zh:"台积电创始人", cat:"科技创始人", country:"中国台湾",
+   desc:"台积电创始人，开创了'纯晶圆代工'商业模式——你设计、我制造——彻底改变了全球半导体产业分工，被称为'芯片业教父'。",
+   video:"https://www.youtube.com/results?search_query=张忠谋+台积电", wiki:"https://baike.baidu.com/item/张忠谋"},
+  {abbr:"任正非", full:"Ren Zhengfei", zh:"华为创始人", cat:"科技创始人", country:"中国",
+   desc:"华为创始人兼精神领袖，从军人转型企业家，带领华为成为全球通信与科技巨头，在极限制裁下仍保持韧性与创新，以低调和危机意识著称。",
+   video:"https://www.youtube.com/results?search_query=任正非+华为", wiki:"https://baike.baidu.com/item/任正非"},
+  {abbr:"雷军", full:"Lei Jun", zh:"小米创始人", cat:"科技创始人", country:"中国",
+   desc:"小米创始人兼 CEO，'Are you OK'名场面破圈。从手机到 IoT 到造车(SU7)，风格务实亲民，有'雷布斯'之称。",
+   video:"https://www.youtube.com/results?search_query=雷军+小米", wiki:"https://baike.baidu.com/item/雷军"},
+  {abbr:"Demis Hassabis", full:"Demis Hassabis", zh:"Google DeepMind CEO", cat:"科技创始人", country:"英国",
+   desc:"DeepMind 创始人兼 CEO，带队做出 AlphaGo、AlphaFold(预测蛋白质结构)。2024 年因 AlphaFold 获得诺贝尔化学奖，是 AI 领域极罕见的诺奖得主。",
+   video:"https://www.youtube.com/results?search_query=demis+hassabis+deepmind", wiki:"https://baike.baidu.com/item/杰米斯·哈萨比斯"},
+  {abbr:"Ilya Sutskever", full:"Ilya Sutskever", zh:"AI 大佬中的大佬", cat:"科技创始人", country:"以色列/加拿大",
+   desc:"深度学习先驱 Hinton 的学生，OpenAI 联合创始人兼前首席科学家，主导了 GPT 系列的技术方向。2024 年离开 OpenAI，创立专注'超级智能安全'的 SSI 公司。",
+   video:"https://www.youtube.com/results?search_query=ilya+sutskever", wiki:"https://en.wikipedia.org/wiki/Ilya_Sutskever"},
+  {abbr:"Geoffrey Hinton", full:"Geoffrey Hinton", zh:"深度学习之父", cat:"科技创始人", country:"加拿大/英国",
+   desc:"被称为'AI 教父'/'深度学习之父'，反向传播和深度信念网络的奠基人。2024 年因 AI 贡献获诺贝尔物理学奖。曾任谷歌研究员，后因对 AI 风险的担忧离开并公开警告。",
+   video:"https://www.youtube.com/results?search_query=geoffrey+hinton+godfather+AI", wiki:"https://baike.baidu.com/item/杰弗里·辛顿"},
+  {abbr:"Yann LeCun", full:"Yann LeCun", zh:"卷积网络之父", cat:"科技创始人", country:"法国/美国",
+   desc:"卷积神经网络(CNN)的发明者，与 Hinton、Bengio 并称'深度学习三巨头'。现任 Meta AI 首席科学家，主张开源开放、反对 AI 末日论。2018 年与 Hinton、Bengio 共获图灵奖。",
+   video:"https://www.youtube.com/results?search_query=yann+lecun", wiki:"https://baike.baidu.com/item/杨立昆"},
+  {abbr:"Yoshua Bengio", full:"Yoshua Bengio", zh:"深度学习三巨头之一", cat:"科技创始人", country:"加拿大",
+   desc:"蒙特利尔大学教授，与 Hinton、LeCun 并称'深度学习三巨头'，2018 年共获图灵奖。对注意力机制和生成模型有重要贡献，近年关注 AI 安全与治理。",
+   video:"https://www.youtube.com/results?search_query=yoshua+bengio", wiki:"https://baike.baidu.com/item/约书亚·本吉奥"},
+  {abbr:"图灵奖", full:"Turing Award", zh:"计算机界的诺贝尔奖", cat:"科技创始人",
+   desc:"由 ACM 颁发的计算机科学最高荣誉，被称为'计算机界的诺贝尔奖'。2018 年颁给深度学习三巨头(Hinton/LeCun/Bengio)，标志着 AI 被主流学术界认可。",
+   video:"https://www.youtube.com/results?search_query=turing+award", wiki:"https://baike.baidu.com/item/图灵奖"},
+
   /* ===== 商业·补充公司 ===== */
   {abbr:"Salesforce", full:"Salesforce, Inc.", zh:"全球最大 CRM 云", cat:"科技互联网", country:"美国", hq:"旧金山", founder:"马克·贝尼奥夫",
    desc:"全球最大的客户关系管理(CRM)云软件公司，开创了软件订阅(SaaS)模式。主营：企业云软件。",
@@ -2189,7 +2262,7 @@ const introEl = document.getElementById('intro');
 
 /* 四大板块 → 各自包含的小分类 */
 const GROUPS = {
-  "AI":["基础","经典模型","训练","推理部署","硬件算力","RAG检索","Agent应用","采样参数","评估安全","生成","前沿","模型产品","公司机构","机器学习","Transformer论文","API与调用"],
+  "AI":["基础","经典模型","训练","推理部署","硬件算力","RAG检索","Agent应用","采样参数","评估安全","生成","前沿","模型产品","公司机构","机器学习","Transformer论文","API与调用","科技创始人"],
   "商业":["科技互联网","汽车","能源","金融","医药健康","消费零售","工业航空","传媒娱乐","奢侈品","世界首富","中国首富","中国知名企业","投资人","投资机构"],
   "计算机":["计算机基础","常用软件"],
   "旅行":["欧洲景点","世界景点","亚洲景点"],
@@ -2351,12 +2424,14 @@ document.getElementById('btnShare').addEventListener('click',async()=>{
   }catch(e){}
 });
 
-/* 手机上往下滑时自动折叠分类，往上滑时展开 */
+/* 只在手机(窄屏)上往下滑时自动折叠分类，桌面不折叠（避免闪烁） */
 let lastY = window.scrollY;
+function isMobile(){ return window.innerWidth <= 768; }
 window.addEventListener('scroll', ()=>{
+  if(!isMobile()) return;
   const y = window.scrollY;
-  if(y > 150 && y > lastY + 6) document.body.classList.add('navhide');
-  else if(y < lastY - 6 || y < 150) document.body.classList.remove('navhide');
+  if(y > 180 && y > lastY + 12) document.body.classList.add('navhide');
+  else if(y < lastY - 12 || y < 180) document.body.classList.remove('navhide');
   lastY = y;
 }, {passive:true});
 qEl.addEventListener('focus', ()=>document.body.classList.remove('navhide'));
