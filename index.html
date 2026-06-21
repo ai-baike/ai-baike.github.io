@@ -63,6 +63,14 @@
   .links a.vid{color:var(--accent2)}
   .introbox{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);
     border-radius:9px;padding:11px 14px;margin:10px 0 2px;font-size:14px;color:var(--muted);line-height:1.65}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0}
+  .tbtn{padding:7px 14px;border-radius:9px;background:var(--card);border:1px solid var(--line);
+    color:var(--text);font-size:14px;cursor:pointer}
+  .tbtn:hover{border-color:var(--accent)}
+  .tbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .star{cursor:pointer;font-size:19px;line-height:1;color:var(--muted);flex:none;margin-top:2px}
+  .star.on,.star:hover{color:#f5b301}
+  .card.flash{border-color:var(--accent2);box-shadow:0 0 0 2px var(--accent2)}
   .empty{text-align:center;color:var(--muted);padding:40px 0}
   footer{text-align:center;color:var(--muted);font-size:12px;margin-top:30px}
 </style>
@@ -78,6 +86,11 @@
     <input id="q" type="text" placeholder="搜索名词、英文或中文…（例如 RAG、注意力、微调）" autocomplete="off">
     <div class="groups" id="groups"></div>
     <div class="filters" id="filters"></div>
+  </div>
+  <div class="tools">
+    <button id="btnRandom" class="tbtn">🎲 随机一词</button>
+    <button id="btnFav" class="tbtn">⭐ 只看收藏</button>
+    <button id="btnShare" class="tbtn">📤 分享</button>
   </div>
   <div id="intro"></div>
   <div class="count" id="count"></div>
@@ -1802,7 +1815,161 @@ const DATA = [
    video:"https://www.youtube.com/results?search_query=aws+bedrock", wiki:"https://en.wikipedia.org/wiki/Amazon_Web_Services"},
   {abbr:"AI21 Labs", full:"AI21 Labs", zh:"以色列大模型公司", cat:"公司机构", country:"以色列", hq:"特拉维夫",
    desc:"以色列的 AI 公司，代表作是混合架构模型 Jamba，也做面向企业的 NLP 产品。",
-   video:"https://www.youtube.com/results?search_query=AI21+labs", wiki:"https://en.wikipedia.org/wiki/AI21_Labs"}
+   video:"https://www.youtube.com/results?search_query=AI21+labs", wiki:"https://en.wikipedia.org/wiki/AI21_Labs"},
+
+  /* ===== AI·来自 Hugging Face 生态的补充 ===== */
+  {abbr:"Unsloth", full:"Unsloth", zh:"高效微调工具", cat:"训练",
+   desc:"开源库，让微调和运行大模型更省显存、更快(常配合 LoRA/QLoRA)，并在 Hugging Face 上大量提供 GGUF 量化模型，是开源社区跑模型的利器。",
+   video:"https://www.youtube.com/results?search_query=unsloth+fine+tuning", wiki:"https://github.com/unslothai/unsloth"},
+  {abbr:"Nemotron", full:"Nemotron (by NVIDIA)", zh:"英伟达开源模型", cat:"模型产品",
+   desc:"英伟达推出的开源大模型家族，常用于生成训练数据、企业定制，配合其 GPU 生态。",
+   video:"https://www.youtube.com/results?search_query=nvidia+nemotron", wiki:"https://en.wikipedia.org/wiki/Nvidia"},
+  {abbr:"FLUX", full:"FLUX (by Black Forest Labs)", zh:"顶级开源文生图模型", cat:"生成",
+   desc:"由原 Stable Diffusion 核心团队打造的开源文生图模型，画质惊艳、可商用，已成为开源图像生成的新标杆。",
+   video:"https://www.youtube.com/results?search_query=flux+black+forest+labs", wiki:"https://en.wikipedia.org/wiki/FLUX.1"},
+  {abbr:"Black Forest Labs", full:"Black Forest Labs", zh:"FLUX 背后的公司", cat:"公司机构", country:"德国", hq:"弗赖堡",
+   desc:"德国 AI 公司，由原 Stable Diffusion 团队成员创立，代表作是开源文生图模型 FLUX。",
+   video:"https://www.youtube.com/results?search_query=black+forest+labs", wiki:"https://en.wikipedia.org/wiki/Black_Forest_Labs"},
+  {abbr:"Liquid AI", full:"Liquid AI (LFM)", zh:"非Transformer模型公司", cat:"公司机构", country:"美国", hq:"波士顿", founder:"MIT 团队",
+   desc:"源自 MIT 的创业公司，主打“液态基础模型(LFM)”——一种不同于 Transformer 的高效架构，强调小体积、端侧运行。",
+   video:"https://www.youtube.com/results?search_query=liquid+ai+LFM", wiki:"https://en.wikipedia.org/wiki/Liquid_AI"},
+
+  /* ===== 商业·补充公司 ===== */
+  {abbr:"Salesforce", full:"Salesforce, Inc.", zh:"全球最大 CRM 云", cat:"科技互联网", country:"美国", hq:"旧金山", founder:"马克·贝尼奥夫",
+   desc:"全球最大的客户关系管理(CRM)云软件公司，开创了软件订阅(SaaS)模式。主营：企业云软件。",
+   video:"https://www.youtube.com/results?search_query=salesforce+company", wiki:"https://baike.baidu.com/item/Salesforce"},
+  {abbr:"SAP 思爱普", full:"SAP SE", zh:"欧洲最大软件公司", cat:"科技互联网", country:"德国", hq:"沃尔多夫", founder:"五位前 IBM 员工",
+   desc:"德国企业管理软件(ERP)巨头，全球大企业用它管理财务、供应链等核心流程，是欧洲市值最高的科技公司之一。",
+   video:"https://www.youtube.com/results?search_query=SAP+ERP+company", wiki:"https://baike.baidu.com/item/SAP公司"},
+  {abbr:"Adobe", full:"Adobe Inc.", zh:"创意软件巨头", cat:"科技互联网", country:"美国", hq:"圣何塞", founder:"约翰·沃诺克、查尔斯·格什克",
+   desc:"Photoshop、PDF、Premiere 等创意软件的缔造者，发明了 PDF 格式。主营：创意与文档软件(订阅制)。",
+   video:"https://www.youtube.com/results?search_query=adobe+company", wiki:"https://baike.baidu.com/item/Adobe"},
+  {abbr:"Uber", full:"Uber Technologies", zh:"网约车鼻祖", cat:"科技互联网", country:"美国", hq:"旧金山", founder:"特拉维斯·卡兰尼克等",
+   desc:"开创了全球网约车模式，也做外卖(Uber Eats)、货运。主营：出行与配送平台。",
+   video:"https://www.youtube.com/results?search_query=uber+company", wiki:"https://baike.baidu.com/item/优步"},
+  {abbr:"American Express 运通", full:"American Express", zh:"高端信用卡", cat:"金融", country:"美国", hq:"纽约", founder:"始于快递公司",
+   desc:"以高端信用卡和支付服务著称，自建支付网络与高净值客户体系。主营：信用卡、支付、旅行服务。",
+   video:"https://www.youtube.com/results?search_query=american+express", wiki:"https://baike.baidu.com/item/美国运通"},
+  {abbr:"Morgan Stanley 摩根士丹利", full:"Morgan Stanley", zh:"顶级投行", cat:"金融", country:"美国", hq:"纽约", founder:"亨利·摩根、哈罗德·士丹利",
+   desc:"全球顶级投资银行与财富管理机构(与高盛齐名)。主营：投行、证券、财富与投资管理。",
+   video:"https://www.youtube.com/results?search_query=morgan+stanley", wiki:"https://baike.baidu.com/item/摩根士丹利"},
+
+  /* ===== 健身·训练概念 ===== */
+  {abbr:"有氧运动", full:"Cardio / Aerobic", zh:"练心肺、燃脂", cat:"训练概念",
+   desc:"中低强度、能持续较久、靠氧气供能的运动（跑步、骑行、游泳），主要锻炼心肺、消耗脂肪。",
+   video:"https://www.youtube.com/results?search_query=有氧运动+是什么", wiki:"https://baike.baidu.com/item/有氧运动"},
+  {abbr:"无氧运动", full:"Anaerobic Exercise", zh:"练力量、增肌", cat:"训练概念",
+   desc:"高强度、短时间、不靠氧气供能的运动（举铁、冲刺），主要增肌、提升力量与爆发。",
+   video:"https://www.youtube.com/results?search_query=无氧运动+是什么", wiki:"https://baike.baidu.com/item/无氧运动"},
+  {abbr:"HIIT", full:"High-Intensity Interval Training", zh:"高强度间歇训练", cat:"训练概念",
+   desc:"高强度爆发与短暂休息交替进行（如 30 秒冲刺+15 秒歇），省时、燃脂高效、提升心肺。波比跳循环就是典型。",
+   video:"https://www.youtube.com/results?search_query=HIIT+training", wiki:"https://baike.baidu.com/item/HIIT"},
+  {abbr:"力量训练", full:"Strength Training", zh:"抗阻增肌增力", cat:"训练概念",
+   desc:"用器械或自重作为阻力来对抗，从而增长肌肉和力量，又叫“抗阻训练”。深蹲、卧推都属于它。",
+   video:"https://www.youtube.com/results?search_query=strength+training+basics", wiki:"https://baike.baidu.com/item/力量训练"},
+  {abbr:"组数与次数", full:"Sets & Reps", zh:"训练量的基本单位", cat:"训练概念",
+   desc:"一个动作连续做 N 次叫“一组(set)”，N 就是“次数(reps)”。写作“3 组 × 12 次”，是安排训练的基本单位。",
+   video:"https://www.youtube.com/results?search_query=sets+and+reps+explained", wiki:"https://baike.baidu.com/item/组数"},
+  {abbr:"RM", full:"Repetition Maximum", zh:"最大重复次数", cat:"训练概念",
+   desc:"某个重量你能标准完成的最多次数。如 8RM = 这个重量最多做 8 次，用来衡量和设定训练强度。",
+   video:"https://www.youtube.com/results?search_query=repetition+maximum+RM", wiki:"https://baike.baidu.com/item/1RM"},
+  {abbr:"力竭", full:"Training to Failure", zh:"做到做不动", cat:"训练概念",
+   desc:"一组动作做到再也无法标准完成的程度，是刺激肌肉增长的一种高强度手段，但不宜每组都用。",
+   video:"https://www.youtube.com/results?search_query=training+to+failure", wiki:"https://baike.baidu.com/item/力竭"},
+  {abbr:"超量恢复", full:"Supercompensation", zh:"练后变更强的原理", cat:"训练概念",
+   desc:"训练破坏肌肉→休息和营养修复→身体补偿得比原来更强。所以“练+吃+睡”缺一不可，练后要给恢复时间。",
+   video:"https://www.youtube.com/results?search_query=supercompensation", wiki:"https://baike.baidu.com/item/超量恢复"},
+  {abbr:"增肌期", full:"Bulking", zh:"长肌肉阶段", cat:"训练概念",
+   desc:"热量盈余（吃得比消耗多）、主攻增长肌肉的阶段，通常会附带增加一些脂肪。",
+   video:"https://www.youtube.com/results?search_query=bulking+fitness", wiki:"https://baike.baidu.com/item/增肌"},
+  {abbr:"减脂期", full:"Cutting", zh:"掉脂肪阶段", cat:"训练概念",
+   desc:"热量缺口（吃得比消耗少）、主攻减少脂肪、同时尽量保住肌肉的阶段。",
+   video:"https://www.youtube.com/results?search_query=cutting+fat+loss", wiki:"https://baike.baidu.com/item/减脂"},
+  {abbr:"复合动作", full:"Compound Movement", zh:"一动练多肌群", cat:"训练概念",
+   desc:"一个动作同时调动多个关节和肌群（深蹲、硬拉、卧推、引体），增肌增力效率最高，应作为训练核心。",
+   video:"https://www.youtube.com/results?search_query=compound+exercises", wiki:"https://baike.baidu.com/item/复合动作"},
+  {abbr:"孤立动作", full:"Isolation Movement", zh:"精雕单一肌肉", cat:"训练概念",
+   desc:"只针对单一肌肉的动作（二头弯举、腿屈伸），用来精细雕刻某块肌肉，作为复合动作的补充。",
+   video:"https://www.youtube.com/results?search_query=isolation+exercises", wiki:"https://baike.baidu.com/item/孤立动作"},
+  {abbr:"拉伸", full:"Stretching", zh:"提升柔韧与放松", cat:"训练概念",
+   desc:"分动态拉伸（练前热身）和静态拉伸（练后放松），能提升柔韧性、降低受伤风险、缓解肌肉紧张。",
+   video:"https://www.youtube.com/results?search_query=stretching+guide", wiki:"https://baike.baidu.com/item/拉伸"},
+  {abbr:"DOMS 延迟酸痛", full:"Delayed Onset Muscle Soreness", zh:"练后1-2天的酸痛", cat:"训练概念",
+   desc:"训练后 24-72 小时才出现的肌肉酸痛，是肌肉适应新刺激的正常现象（并非乳酸堆积），新动作或大重量后尤其明显。",
+   video:"https://www.youtube.com/results?search_query=DOMS+muscle+soreness", wiki:"https://baike.baidu.com/item/延迟性肌肉酸痛"},
+
+  /* ===== 健身·补剂营养 ===== */
+  {abbr:"宏量营养素", full:"Macronutrients (Macros)", zh:"三大供能营养素", cat:"补剂营养",
+   desc:"蛋白质、碳水化合物、脂肪三大供能营养素，健身饮食的核心就是按目标搭配它们的比例（俗称“算 macros”）。",
+   video:"https://www.youtube.com/results?search_query=macronutrients+macros", wiki:"https://baike.baidu.com/item/宏量营养素"},
+  {abbr:"蛋白粉", full:"Whey Protein", zh:"补蛋白助修复", cat:"补剂营养",
+   desc:"乳清蛋白粉，方便快速地补充优质蛋白、帮助肌肉修复生长，训练后或日常蛋白不够时常喝。",
+   video:"https://www.youtube.com/results?search_query=whey+protein", wiki:"https://baike.baidu.com/item/乳清蛋白"},
+  {abbr:"肌酸", full:"Creatine", zh:"最有效的增力补剂", cat:"补剂营养",
+   desc:"研究最充分、最有效又安全廉价的补剂之一，能提升力量、爆发与肌肉饱满度，每天小剂量长期服用。",
+   video:"https://www.youtube.com/results?search_query=creatine+benefits", wiki:"https://baike.baidu.com/item/肌酸"},
+  {abbr:"BCAA", full:"Branched-Chain Amino Acids", zh:"支链氨基酸", cat:"补剂营养",
+   desc:"三种必需氨基酸(亮/异亮/缬氨酸)，理论上助恢复、减少肌肉分解；但日常蛋白吃够时，额外补充作用有限。",
+   video:"https://www.youtube.com/results?search_query=BCAA+supplement", wiki:"https://baike.baidu.com/item/支链氨基酸"},
+  {abbr:"咖啡因", full:"Caffeine", zh:"提神提表现", cat:"补剂营养",
+   desc:"最常用的运动表现增强剂，能提神、降低疲劳感、提升力量与耐力，训练前适量摄入效果好。",
+   video:"https://www.youtube.com/results?search_query=caffeine+exercise+performance", wiki:"https://baike.baidu.com/item/咖啡因"},
+  {abbr:"氮泵", full:"Pre-workout", zh:"练前兴奋剂", cat:"补剂营养",
+   desc:"训练前补剂（多含咖啡因、瓜氨酸等），让你更有劲、更专注、泵感更强。对咖啡因敏感者慎用、别晚上喝。",
+   video:"https://www.youtube.com/results?search_query=pre+workout+supplement", wiki:"https://baike.baidu.com/item/氮泵"},
+  {abbr:"鱼油", full:"Omega-3 / Fish Oil", zh:"健康脂肪补充", cat:"补剂营养",
+   desc:"富含 Omega-3 的“好脂肪”，有助抗炎、保护心脑血管和关节，饮食中鱼吃得少的人可补充。",
+   video:"https://www.youtube.com/results?search_query=omega+3+fish+oil", wiki:"https://baike.baidu.com/item/鱼油"},
+  {abbr:"维生素D", full:"Vitamin D", zh:"易缺的关键维生素", cat:"补剂营养",
+   desc:"帮助钙吸收、影响骨骼、激素与免疫，靠晒太阳合成。现代人普遍缺乏，必要时可补充。",
+   video:"https://www.youtube.com/results?search_query=vitamin+D+benefits", wiki:"https://baike.baidu.com/item/维生素D"},
+  {abbr:"电解质", full:"Electrolytes", zh:"补盐防抽筋", cat:"补剂营养",
+   desc:"钠、钾、镁等矿物质，大量出汗后会流失，补充能防抽筋、脱水和乏力，运动饮料里就有。",
+   video:"https://www.youtube.com/results?search_query=electrolytes", wiki:"https://baike.baidu.com/item/电解质"},
+
+  /* ===== 旅行·亚洲景点 ===== */
+  {abbr:"东京", full:"Tokyo", zh:"日本·超级都市", cat:"亚洲景点", country:"日本",
+   desc:"现代与传统交融的国际大都市，涩谷十字路口、浅草寺、秋叶原、teamLab，以及全球最多米其林星的美食。",
+   video:"https://www.youtube.com/results?search_query=tokyo+travel", wiki:"https://baike.baidu.com/item/东京"},
+  {abbr:"北海道", full:"Hokkaido", zh:"日本·四季胜地", cat:"亚洲景点", country:"日本",
+   desc:"日本最北的大岛，冬季粉雪滑雪+温泉，夏季富良野薰衣草花田，札幌美食与海鲜诱人。",
+   video:"https://www.youtube.com/results?search_query=hokkaido+travel", wiki:"https://baike.baidu.com/item/北海道"},
+  {abbr:"冲绳", full:"Okinawa", zh:"日本·海岛度假", cat:"亚洲景点", country:"日本",
+   desc:"日本最南的海岛县，碧海白沙、潜水浮潜与独特的琉球文化，是日本人的度假天堂。",
+   video:"https://www.youtube.com/results?search_query=okinawa+travel", wiki:"https://baike.baidu.com/item/冲绳"},
+  {abbr:"奈良", full:"Nara", zh:"日本·古都小鹿", cat:"亚洲景点", country:"日本",
+   desc:"日本古都，东大寺的巨型大佛与满公园自由走动的小鹿是招牌，离京都、大阪都很近。",
+   video:"https://www.youtube.com/results?search_query=nara+japan+deer", wiki:"https://baike.baidu.com/item/奈良市"},
+  {abbr:"曼谷", full:"Bangkok", zh:"泰国·活力首都", cat:"亚洲景点", country:"泰国",
+   desc:"泰国首都，大皇宫与卧佛寺金碧辉煌，夜市、按摩、街头美食与夜生活丰富，性价比高。",
+   video:"https://www.youtube.com/results?search_query=bangkok+travel", wiki:"https://baike.baidu.com/item/曼谷"},
+  {abbr:"清迈", full:"Chiang Mai", zh:"泰国·慢生活古城", cat:"亚洲景点", country:"泰国",
+   desc:"泰北文化古城，古城墙内寺庙林立，周末夜市、大象保护营与悠闲氛围，是数字游民聚集地。",
+   video:"https://www.youtube.com/results?search_query=chiang+mai+travel", wiki:"https://baike.baidu.com/item/清迈"},
+  {abbr:"新加坡", full:"Singapore", zh:"花园城市国家", cat:"亚洲景点", country:"新加坡",
+   desc:"干净有序的城市国家，滨海湾金沙、超级树、鱼尾狮，以及融合中西马印的多元美食。",
+   video:"https://www.youtube.com/results?search_query=singapore+travel", wiki:"https://baike.baidu.com/item/新加坡"},
+  {abbr:"下龙湾", full:"Ha Long Bay", zh:"越南·海上石林", cat:"亚洲景点", country:"越南",
+   desc:"成千上万座喀斯特石灰岩岛矗立海中（世界遗产），乘船游弋于奇峰碧水间，可过夜邮轮。",
+   video:"https://www.youtube.com/results?search_query=ha+long+bay+vietnam", wiki:"https://baike.baidu.com/item/下龙湾"},
+  {abbr:"张家界", full:"Zhangjiajie", zh:"中国·阿凡达取景", cat:"亚洲景点", country:"中国",
+   desc:"湖南的石英砂岩峰林，云雾中千百根擎天石柱，是电影《阿凡达》“悬浮山”灵感地，还有玻璃栈道。",
+   video:"https://www.youtube.com/results?search_query=zhangjiajie+china", wiki:"https://baike.baidu.com/item/张家界"},
+  {abbr:"桂林", full:"Guilin", zh:"中国·山水甲天下", cat:"亚洲景点", country:"中国",
+   desc:"“桂林山水甲天下”，漓江两岸喀斯特峰丛如水墨画，阳朔骑行、竹筏漂流，20 元人民币背面就是这里。",
+   video:"https://www.youtube.com/results?search_query=guilin+li+river", wiki:"https://baike.baidu.com/item/桂林"},
+  {abbr:"九寨沟", full:"Jiuzhaigou", zh:"中国·五彩湖泊", cat:"亚洲景点", country:"中国",
+   desc:"四川高山峡谷里的五彩湖泊、瀑布与彩林，湖水清澈斑斓如童话，秋季层林尽染最美。",
+   video:"https://www.youtube.com/results?search_query=jiuzhaigou+china", wiki:"https://baike.baidu.com/item/九寨沟"},
+  {abbr:"布达拉宫", full:"Potala Palace", zh:"中国·西藏圣殿", cat:"亚洲景点", country:"中国",
+   desc:"拉萨的地标宫堡（世界遗产），依山而建、气势恢宏，是藏传佛教与西藏历史的精神象征。",
+   video:"https://www.youtube.com/results?search_query=potala+palace+tibet", wiki:"https://baike.baidu.com/item/布达拉宫"},
+  {abbr:"黄山", full:"Mount Huangshan", zh:"中国·奇松云海", cat:"亚洲景点", country:"中国",
+   desc:"安徽名山，以奇松、怪石、云海、温泉“四绝”著称，“五岳归来不看山，黄山归来不看岳”。",
+   video:"https://www.youtube.com/results?search_query=huangshan+mountain", wiki:"https://baike.baidu.com/item/黄山"},
+  {abbr:"三亚", full:"Sanya", zh:"中国·热带海滨", cat:"亚洲景点", country:"中国",
+   desc:"海南岛南端的热带海滨度假城市，阳光沙滩、椰林海岛，是国内冬季避寒与度假的首选之一。",
+   video:"https://www.youtube.com/results?search_query=sanya+hainan", wiki:"https://baike.baidu.com/item/三亚"}
 ];
 
 /* ===== 渲染逻辑 ===== */
@@ -1818,8 +1985,8 @@ const GROUPS = {
   "AI":["基础","经典模型","训练","推理部署","硬件算力","RAG检索","Agent应用","采样参数","评估安全","生成","前沿","模型产品","公司机构"],
   "商业":["科技互联网","汽车","能源","金融","医药健康","消费零售","工业航空","传媒娱乐","奢侈品","世界首富","中国首富","中国知名企业","投资人","投资机构"],
   "计算机":["计算机基础","常用软件"],
-  "旅行":["欧洲景点","世界景点"],
-  "健身":["减脂食物","肌肉名称","健身动作","健身器材","健身博主"]
+  "旅行":["欧洲景点","世界景点","亚洲景点"],
+  "健身":["减脂食物","肌肉名称","健身动作","健身器材","训练概念","补剂营养","健身博主"]
 };
 const GROUP_INTRO = {
   "AI":"🤖 从神经网络、Transformer 等底层原理，到训练、推理部署、硬件算力，再到大模型公司与产品——建立对人工智能的整体认知。",
@@ -1831,6 +1998,8 @@ const GROUP_INTRO = {
 const ALLCATS = Array.from(new Set(DATA.map(d=>d.cat)));
 let activeGroup = '全部';
 let activeCat = '全部';
+let showFavOnly = false;
+let favs = JSON.parse(localStorage.getItem('aibaike_favs')||'[]');
 
 const groupNames = ['全部', ...Object.keys(GROUPS)];
 groupsEl.innerHTML = groupNames.map(g=>`<span class="grp${g==='全部'?' active':''}" data-g="${g}">${g}</span>`).join('');
@@ -1896,22 +2065,18 @@ function speak(text, btn){
 function render(){
   const q = qEl.value.trim().toLowerCase();
   if(introEl) introEl.innerHTML = (activeGroup!=='全部' && GROUP_INTRO[activeGroup]) ? `<div class="introbox">${GROUP_INTRO[activeGroup]}</div>` : '';
-  const items = DATA.filter(d=>{
-    const inGroup = activeGroup==='全部' || (GROUPS[activeGroup]||[]).includes(d.cat);
-    const matchCat = activeCat==='全部' || d.cat===activeCat;
-    const hay = (d.abbr+' '+d.full+' '+d.zh+' '+d.desc+' '+(d.country||'')+' '+(d.founder||'')).toLowerCase();
-    return inGroup && matchCat && (!q || hay.includes(q));
-  });
+  const items = getFiltered();
   countEl.textContent = `共 ${items.length} 个名词`;
   if(!items.length){ listEl.innerHTML = '<div class="empty">没有匹配的名词，换个关键词试试 🔍</div>'; return; }
   listEl.innerHTML = items.map((d,i)=>`
-    <div class="card" data-i="${i}">
+    <div class="card" data-i="${i}" data-abbr="${esc(d.abbr)}">
       <div class="head">
         <div class="main">
           <div class="abbr">${esc(d.abbr)}<button class="say" data-say="${esc(sayText(d))}" title="点击朗读发音" aria-label="朗读发音">🔊</button></div>
           <div class="full">${esc(d.full)}</div>
           <div class="zh">${esc(d.zh)}</div>
         </div>
+        <span class="star${favs.includes(d.abbr)?' on':''}" data-fav="${esc(d.abbr)}" title="收藏/取消收藏">${favs.includes(d.abbr)?'★':'☆'}</span>
         <span class="cat">${esc(d.cat)}</span>
         <span class="arrow">▶</span>
       </div>
@@ -1930,7 +2095,53 @@ function render(){
   listEl.querySelectorAll('.say').forEach(btn=>{
     btn.addEventListener('click',e=>{ e.stopPropagation(); speak(btn.dataset.say, btn); });
   });
+  listEl.querySelectorAll('.star').forEach(s=>{
+    s.addEventListener('click',e=>{ e.stopPropagation(); toggleFav(s.dataset.fav);
+      const on=favs.includes(s.dataset.fav); s.textContent=on?'★':'☆'; s.classList.toggle('on',on);
+      if(showFavOnly) render(); });
+  });
 }
+
+function getFiltered(){
+  const q = qEl.value.trim().toLowerCase();
+  return DATA.filter(d=>{
+    const inGroup = activeGroup==='全部' || (GROUPS[activeGroup]||[]).includes(d.cat);
+    const matchCat = activeCat==='全部' || d.cat===activeCat;
+    const matchFav = !showFavOnly || favs.includes(d.abbr);
+    const hay = (d.abbr+' '+d.full+' '+d.zh+' '+d.desc+' '+(d.country||'')+' '+(d.founder||'')).toLowerCase();
+    return inGroup && matchCat && matchFav && (!q || hay.includes(q));
+  });
+}
+function toggleFav(name){
+  const i=favs.indexOf(name);
+  if(i>=0) favs.splice(i,1); else favs.push(name);
+  localStorage.setItem('aibaike_favs', JSON.stringify(favs));
+}
+
+/* 工具栏：🎲随机一词 / ⭐只看收藏 / 📤分享 */
+document.getElementById('btnRandom').addEventListener('click',()=>{
+  const items=getFiltered(); if(!items.length) return;
+  const pick=items[Math.floor(Math.random()*items.length)];
+  const cards=[...listEl.querySelectorAll('.card')];
+  const card=cards.find(c=>c.dataset.abbr===pick.abbr);
+  if(card){ cards.forEach(c=>c.classList.remove('open')); card.classList.add('open');
+    card.scrollIntoView({behavior:'smooth',block:'center'});
+    card.classList.add('flash'); setTimeout(()=>card.classList.remove('flash'),1200); }
+});
+const btnFav=document.getElementById('btnFav');
+btnFav.addEventListener('click',()=>{
+  showFavOnly=!showFavOnly;
+  btnFav.classList.toggle('on',showFavOnly);
+  btnFav.textContent = showFavOnly?'⭐ 收藏中（点取消）':'⭐ 只看收藏';
+  render();
+});
+document.getElementById('btnShare').addEventListener('click',async()=>{
+  const url='https://ai-baike.github.io';
+  try{
+    if(navigator.share){ await navigator.share({title:'AI 名词小词典', text:'一本可查可听的 AI / 商业 / 计算机 / 旅行 / 健身 百科', url}); }
+    else { await navigator.clipboard.writeText(url); alert('网址已复制：'+url); }
+  }catch(e){}
+});
 
 qEl.addEventListener('input', render);
 render();
