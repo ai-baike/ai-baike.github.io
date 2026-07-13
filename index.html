@@ -63,23 +63,6 @@
 
     .mini-brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 760; letter-spacing: -.02em; }
     .mini-mark { width: 38px; height: 38px; flex: none; }
-    .top-links { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-    .top-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 38px;
-      padding: 7px 12px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: rgba(255, 254, 249, .74);
-      color: #596477;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 650;
-    }
-    .top-link:hover { border-color: #c9c4f3; color: var(--purple-dark); }
-
     .hero {
       position: relative;
       overflow: hidden;
@@ -313,10 +296,6 @@
     .learn-note a { color: #4f46a7; font-size: 13px; font-weight: 780; text-decoration: none; white-space: nowrap; }
 
     footer { margin: 50px 0 28px; padding-top: 22px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 20px; color: #7c8492; font-size: 12px; }
-    footer a { color: #5d6580; text-decoration: none; font-weight: 690; }
-    footer a:hover { color: var(--purple-dark); }
-    .footer-links { display: flex; gap: 14px; flex-wrap: wrap; }
-
     .toast { position: fixed; z-index: 99; left: 50%; bottom: 28px; transform: translate(-50%, 18px); padding: 10px 15px; border-radius: 13px; background: #283347; color: white; font-size: 13px; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
@@ -330,7 +309,6 @@
     @media (max-width: 660px) {
       .page { width: min(100% - 22px, 1160px); }
       .topbar { padding-top: 14px; }
-      .top-link.personal-link { display: none; }
       .hero { padding: 27px 21px 25px; border-radius: 28px; gap: 26px; }
       h1 { font-size: clamp(41px, 15vw, 58px); }
       .hero-card { padding: 20px; border-radius: 22px; }
@@ -368,10 +346,6 @@
         </svg>
         <span>AI 上手词典</span>
       </div>
-      <nav class="top-links" aria-label="站点导航">
-        <a class="top-link personal-link" href="https://xiuling-wang.github.io/life-dictionary/" rel="noopener">我的生活词典 ↗</a>
-        <a class="top-link" href="https://ai-baike.github.io/" rel="noopener">GitHub 备用站</a>
-      </nav>
     </header>
 
     <main>
@@ -418,7 +392,7 @@
             <button class="tool-button" id="randomButton" type="button"><span>✦</span><span>随机学一个</span></button>
           </div>
           <div class="chips" id="categoryChips" aria-label="词条分类"></div>
-          <p class="storage-note">♡ 本地收藏只保存在当前浏览器的这个网址中，不会上传或随分享链接发送；主站与备用站互不同步。</p>
+          <p class="storage-note">♡ 本地收藏只保存在当前浏览器的这个网址中，不会上传或随分享链接发送；换设备、浏览器或网址不会自动同步。</p>
         </div>
 
         <div class="section-head" style="margin-top:30px">
@@ -430,18 +404,13 @@
 
       <aside class="learn-note">
         <div class="learn-icon">i</div>
-        <div><h3>本站不收录密钥，也不要把 API Key 发给任何人</h3><p>密钥应放在服务端的环境变量或密钥管理服务中，不要写进网页、截图或提交到 GitHub。</p></div>
+        <div><h3>本站不收录密钥，也不要把 API Key 发给任何人</h3><p>密钥应放在服务端的环境变量或密钥管理服务中，不要写进网页、截图或提交到公开代码仓库。</p></div>
         <a href="https://developers.openai.com/api/docs/guides/production-best-practices" target="_blank" rel="noopener noreferrer">官方安全建议 ↗</a>
       </aside>
     </main>
 
     <footer>
       <span>AI 上手词典 · 用人话拆解 AI 黑话</span>
-      <span class="footer-links">
-        <a href="https://ai-baike.pages.dev/">国内优先入口</a>
-        <a href="https://ai-baike.github.io/">GitHub 备用站</a>
-        <a href="https://xiuling-wang.github.io/life-dictionary/">我的生活词典</a>
-      </span>
     </footer>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
