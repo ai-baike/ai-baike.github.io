@@ -210,6 +210,7 @@
     }
     .tool-button:hover, .tool-button.active { color: var(--purple-dark); border-color: #c5bef3; background: #faf9ff; }
     .tool-button .heart { font-size: 17px; line-height: 1; }
+    .storage-note { margin: 9px 3px 0; color: #7b8290; font-size: 11px; line-height: 1.5; }
 
     .chips { display: flex; gap: 8px; margin-top: 11px; overflow-x: auto; padding: 1px 1px 3px; scrollbar-width: thin; }
     .chip {
@@ -257,7 +258,25 @@
     .fav-btn:hover { color: var(--purple-dark); background: var(--purple-soft); }
     .fav-btn.active { color: var(--purple-dark); background: var(--purple-soft); }
     .term-name { margin: 17px 0 0; font-size: 25px; line-height: 1.18; letter-spacing: -.035em; overflow-wrap: anywhere; }
-    .term-zh { margin: 5px 0 10px; color: var(--purple-dark); font-size: 14px; font-weight: 760; }
+    .term-zh { margin: 5px 0 0; color: var(--purple-dark); font-size: 14px; font-weight: 760; }
+    .speak-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 40px;
+      margin: 10px 0 12px;
+      padding: 7px 11px;
+      border: 1px solid #d8d3f3;
+      border-radius: 12px;
+      background: #f8f7ff;
+      color: #5b53ad;
+      font-size: 12px;
+      font-weight: 760;
+      cursor: pointer;
+    }
+    .speak-btn:hover, .speak-btn.active { color: #40388e; border-color: #aaa1e8; background: var(--purple-soft); }
+    .speak-btn:focus-visible, .fav-btn:focus-visible { outline: 3px solid rgba(123,111,229,.24); outline-offset: 2px; }
+    .speak-icon { width: 17px; text-align: center; line-height: 1; }
     .term-desc { margin: 0; color: #566174; font-size: 14px; }
     .term-details { margin-top: auto; border-top: 1px solid #ece9e1; }
     .term-details summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 20px; color: #626d7f; font-size: 13px; font-weight: 760; cursor: pointer; }
@@ -395,10 +414,11 @@
               <input id="search" type="search" autocomplete="off" placeholder="搜 Agent、API Key、429、上下文…" aria-label="搜索词条">
               <button id="clearSearch" type="button" aria-label="清空搜索">×</button>
             </div>
-            <button class="tool-button" id="favoritesButton" type="button"><span class="heart">♡</span><span>我的收藏</span></button>
+            <button class="tool-button" id="favoritesButton" type="button"><span class="heart">♡</span><span>本地收藏</span></button>
             <button class="tool-button" id="randomButton" type="button"><span>✦</span><span>随机学一个</span></button>
           </div>
           <div class="chips" id="categoryChips" aria-label="词条分类"></div>
+          <p class="storage-note">♡ 本地收藏只保存在当前浏览器的这个网址中，不会上传或随分享链接发送；主站与备用站互不同步。</p>
         </div>
 
         <div class="section-head" style="margin-top:30px">
@@ -441,7 +461,7 @@
     }));
     const state = { query: '', category: '全部', path: '', favoritesOnly: false };
     const storageKey = 'ai-starter-dictionary-favorites-v1';
-    const favorites = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
+    const favorites = loadFavorites(storageKey);
     const cards = document.getElementById('cards');
     const search = document.getElementById('search');
     const clearSearch = document.getElementById('clearSearch');
@@ -449,9 +469,111 @@
     const resultCount = document.getElementById('resultCount');
     const favoritesButton = document.getElementById('favoritesButton');
     const toast = document.getElementById('toast');
+    let activeSpeechId = '';
+    let speechRunId = 0;
+    let speechUtterances = [];
+    let availableVoices = [];
 
     const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
     const normalize = value => String(value ?? '').toLowerCase().replace(/[\s._/-]+/g, '');
+
+    function loadFavorites(key) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(key) || '[]');
+        return new Set(Array.isArray(saved) ? saved : []);
+      } catch {
+        return new Set();
+      }
+    }
+
+    function saveFavorites() {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify([...favorites]));
+        return true;
+      } catch {
+        showToast('浏览器阻止了本地收藏');
+        return false;
+      }
+    }
+
+    function refreshVoices() {
+      if ('speechSynthesis' in window) availableVoices = speechSynthesis.getVoices();
+    }
+
+    function voiceFor(lang) {
+      const wanted = lang.toLowerCase();
+      const family = wanted.split('-')[0];
+      return availableVoices.find(voice => voice.lang.toLowerCase() === wanted)
+        || availableVoices.find(voice => voice.lang.toLowerCase().startsWith(`${family}-`));
+    }
+
+    function updateSpeechButtons() {
+      cards.querySelectorAll('[data-speak]').forEach(button => {
+        const active = button.dataset.speak === activeSpeechId;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+        button.querySelector('.speak-icon').textContent = active ? '■' : '🔊';
+        button.querySelector('[data-speak-label]').textContent = active ? '停止朗读' : '朗读词条';
+      });
+    }
+
+    function stopSpeech(message = '已停止朗读') {
+      speechRunId += 1;
+      if ('speechSynthesis' in window) speechSynthesis.cancel();
+      activeSpeechId = '';
+      speechUtterances = [];
+      updateSpeechButtons();
+      if (message) showToast(message);
+    }
+
+    function speakTerm(term) {
+      if (!term || !('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+        showToast('当前浏览器不支持朗读，请用 Safari 或 Chrome 打开');
+        return;
+      }
+      if (activeSpeechId === term.id) {
+        stopSpeech();
+        return;
+      }
+
+      speechRunId += 1;
+      const runId = speechRunId;
+      speechSynthesis.cancel();
+      activeSpeechId = term.id;
+      updateSpeechButtons();
+      showToast(`正在朗读：${term.term}`);
+      if (!availableVoices.length) refreshVoices();
+
+      const parts = [
+        { text: term.term, lang: 'en-US', rate: .86 },
+        { text: `${term.zh}。${term.desc}`, lang: 'zh-CN', rate: .92 },
+        { text: `小白记住：${term.remember}`, lang: 'zh-CN', rate: .92 }
+      ];
+      speechUtterances = parts.map(part => {
+        const utterance = new SpeechSynthesisUtterance(part.text);
+        utterance.lang = part.lang;
+        utterance.rate = part.rate;
+        const voice = voiceFor(part.lang);
+        if (voice) utterance.voice = voice;
+        utterance.onerror = event => {
+          if (runId !== speechRunId || event.error === 'canceled' || event.error === 'interrupted') return;
+          speechSynthesis.cancel();
+          activeSpeechId = '';
+          speechUtterances = [];
+          updateSpeechButtons();
+          showToast('朗读失败，请换 Safari 或 Chrome 重试');
+        };
+        return utterance;
+      });
+      speechUtterances[speechUtterances.length - 1].onend = () => {
+        if (runId !== speechRunId) return;
+        activeSpeechId = '';
+        speechUtterances = [];
+        updateSpeechButtons();
+        showToast('朗读结束');
+      };
+      speechUtterances.forEach(utterance => speechSynthesis.speak(utterance));
+    }
 
     function filteredTerms() {
       const query = normalize(state.query);
@@ -481,6 +603,7 @@
 
     function termCard(term) {
       const docLink = term.docs ? `<a class="detail-link" href="${esc(term.docs)}" target="_blank" rel="noopener noreferrer">官方延伸阅读 ↗</a>` : '';
+      const speaking = activeSpeechId === term.id;
       return `<article class="term-card" id="${esc(term.id)}">
         <div class="card-main">
           <div class="card-top">
@@ -489,6 +612,7 @@
           </div>
           <h3 class="term-name">${esc(term.term)}</h3>
           <div class="term-zh">${esc(term.zh)}</div>
+          <button class="speak-btn ${speaking ? 'active' : ''}" type="button" data-speak="${esc(term.id)}" aria-label="朗读 ${esc(term.term)} 词条" aria-pressed="${speaking}"><span class="speak-icon" aria-hidden="true">${speaking ? '■' : '🔊'}</span><span data-speak-label>${speaking ? '停止朗读' : '朗读词条'}</span></button>
           <p class="term-desc">${esc(term.desc)}</p>
         </div>
         <details class="term-details">
@@ -496,7 +620,7 @@
           <div class="detail-body">
             <div class="detail-item"><span class="detail-label">常见场景</span><span class="detail-text">${esc(term.seen)}</span></div>
             <div class="detail-item remember"><span class="detail-label">小白记住</span><span class="detail-text">${esc(term.remember)}</span></div>
-            <div class="detail-actions">${docLink}<button class="card-action" type="button" data-speak="${esc(term.id)}">▷ 听解释</button><button class="card-action" type="button" data-copy="${esc(term.id)}">⎘ 复制链接</button></div>
+            <div class="detail-actions">${docLink}<button class="card-action" type="button" data-copy="${esc(term.id)}">⎘ 复制链接</button></div>
           </div>
         </details>
       </article>`;
@@ -505,18 +629,15 @@
     function bindCardActions() {
       cards.querySelectorAll('[data-favorite]').forEach(button => button.addEventListener('click', () => {
         const id = button.dataset.favorite;
-        favorites.has(id) ? favorites.delete(id) : favorites.add(id);
-        localStorage.setItem(storageKey, JSON.stringify([...favorites]));
+        const wasFavorite = favorites.has(id);
+        wasFavorite ? favorites.delete(id) : favorites.add(id);
+        if (!saveFavorites()) wasFavorite ? favorites.add(id) : favorites.delete(id);
+        else showToast(wasFavorite ? '已取消收藏' : '已收藏 · 只保存在当前浏览器');
         renderTerms();
       }));
       cards.querySelectorAll('[data-speak]').forEach(button => button.addEventListener('click', () => {
         const term = TERMS.find(item => item.id === button.dataset.speak);
-        if (!term || !('speechSynthesis' in window)) return showToast('当前浏览器不支持语音播放');
-        speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(`${term.term}，${term.zh}。${term.desc}。小白记住：${term.remember}`);
-        utterance.lang = 'zh-CN';
-        utterance.rate = .92;
-        speechSynthesis.speak(utterance);
+        speakTerm(term);
       }));
       cards.querySelectorAll('[data-copy]').forEach(button => button.addEventListener('click', async () => {
         const url = `${location.origin}${location.pathname}#${button.dataset.copy}`;
@@ -532,6 +653,7 @@
       clearSearch.style.display = state.query ? 'block' : 'none';
       favoritesButton.classList.toggle('active', state.favoritesOnly);
       favoritesButton.querySelector('.heart').textContent = state.favoritesOnly ? '♥' : '♡';
+      favoritesButton.querySelector('span:last-child').textContent = `本地收藏${favorites.size ? ` · ${favorites.size}` : ''}`;
       cards.innerHTML = terms.length ? terms.map(termCard).join('') : `<div class="empty"><div class="empty-mark">…</div><strong>还没找到这个词</strong>试试英文缩写，或者先清空筛选条件。</div>`;
       bindCardActions();
     }
@@ -579,6 +701,10 @@
       document.querySelector('.toolbox').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }));
 
+    if ('speechSynthesis' in window) {
+      refreshVoices();
+      speechSynthesis.addEventListener?.('voiceschanged', refreshVoices);
+    }
     renderCategories();
     renderTerms();
     if (location.hash) requestAnimationFrame(() => {
